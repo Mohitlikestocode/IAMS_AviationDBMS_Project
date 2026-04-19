@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SkyOps Pro | Flight Booking</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#60eca8",
+              "on-tertiary-fixed": "#2c0051",
+              "on-tertiary": "#490080",
+              "surface": "#0b1326",
+              "secondary": "#c0c1ff",
+              "on-secondary-fixed": "#07006c",
+              "primary-fixed-dim": "#51df9c",
+              "on-primary": "#003822",
+              "surface-tint": "#51df9c",
+              "secondary-fixed": "#e1e0ff",
+              "on-primary-fixed-variant": "#005233",
+              "tertiary": "#e6c8ff",
+              "surface-dim": "#0b1326",
+              "error-container": "#93000a",
+              "inverse-primary": "#006c45",
+              "outline": "#869489",
+              "on-background": "#dae2fd",
+              "on-secondary-fixed-variant": "#2f2ebe",
+              "on-surface-variant": "#bbcabe",
+              "surface-container-high": "#222a3d",
+              "secondary-fixed-dim": "#c0c1ff",
+              "tertiary-container": "#d3a4ff",
+              "inverse-on-surface": "#283044",
+              "surface-container-lowest": "#060e20",
+              "on-error": "#690005",
+              "on-primary-fixed": "#002112",
+              "tertiary-fixed": "#f0dbff",
+              "surface-container": "#171f33",
+              "surface-container-highest": "#2d3449",
+              "on-secondary-container": "#b0b2ff",
+              "surface-bright": "#31394d",
+              "on-tertiary-container": "#6b00b7",
+              "primary-fixed": "#71fcb6",
+              "primary-container": "#3ecf8e",
+              "surface-container-low": "#131b2e",
+              "on-error-container": "#ffdad6",
+              "tertiary-fixed-dim": "#ddb7ff",
+              "secondary-container": "#3131c0",
+              "error": "#ffb4ab",
+              "surface-variant": "#2d3449",
+              "inverse-surface": "#dae2fd",
+              "outline-variant": "#3d4a41",
+              "on-secondary": "#1000a9",
+              "background": "#0b1326",
+              "on-surface": "#dae2fd",
+              "on-primary-container": "#005434",
+              "on-tertiary-fixed-variant": "#6900b3"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #0b1326; color: #dae2fd; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #2d3449; border-radius: 10px; }
+        .glass-panel { background: rgba(45, 52, 73, 0.8); backdrop-filter: blur(20px); }
+    </style>
+</head>
+<body class="overflow-hidden">
+<!-- SIDE NAV BAR -->
+<aside class="h-screen w-64 fixed left-0 top-0 overflow-y-auto bg-[#131b2e] flex flex-col py-6 px-4 shadow-2xl z-50">
+<div class="mb-10 px-2 flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container">flight_takeoff</span>
+</div>
+<div>
+<h1 class="text-xl font-bold tracking-tighter text-[#dae2fd]">SkyOps Pro</h1>
+<p class="text-[10px] uppercase tracking-widest text-[#bbcabe] opacity-60">Enterprise Admin</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#bbcabe] opacity-80 hover:bg-[#171f33] hover:text-white transition-all duration-150" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-sans text-sm tracking-tight font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#bbcabe] opacity-80 hover:bg-[#171f33] hover:text-white transition-all duration-150" href="#">
+<span class="material-symbols-outlined">flight_takeoff</span>
+<span class="font-sans text-sm tracking-tight font-medium">Flights</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#bbcabe] opacity-80 hover:bg-[#171f33] hover:text-white transition-all duration-150" href="#">
+<span class="material-symbols-outlined">corporate_fare</span>
+<span class="font-sans text-sm tracking-tight font-medium">Airlines</span>
+</a>
+<!-- Active Tab -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-[#222a3d] text-[#3ecf8e] border-r-2 border-[#3ecf8e] font-sans text-sm tracking-tight font-medium" href="#">
+<span class="material-symbols-outlined">event_seat</span>
+<span>Bookings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#bbcabe] opacity-80 hover:bg-[#171f33] hover:text-white transition-all duration-150" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-sans text-sm tracking-tight font-medium">Passengers</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#bbcabe] opacity-80 hover:bg-[#171f33] hover:text-white transition-all duration-150" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-sans text-sm tracking-tight font-medium">Analytics</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 border-t border-white/5 space-y-1">
+<button class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#bbcabe] opacity-80 hover:bg-[#171f33] hover:text-white transition-all">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-sans text-sm tracking-tight font-medium">Settings</span>
+</button>
+<div class="mt-4 p-4 rounded-xl bg-surface-container-high relative overflow-hidden group">
+<div class="relative z-10">
+<p class="text-xs text-on-surface-variant mb-2">System Status</p>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+<span class="text-xs font-bold text-primary">All Systems Nominal</span>
+</div>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform duration-500">
+<span class="material-symbols-outlined text-6xl">cloud_done</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- MAIN CONTENT -->
+<main class="ml-64 min-h-screen bg-surface flex flex-col">
+<!-- TOP NAV BAR -->
+<header class="fixed top-0 right-0 w-[calc(100%-16rem)] h-16 bg-[#0b1326]/80 backdrop-blur-xl z-40 flex justify-between items-center px-8 shadow-sm">
+<div class="flex items-center gap-6">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-sm">search</span>
+<input class="bg-surface-container-low border-none rounded-full pl-10 pr-4 py-2 text-xs text-on-surface w-64 focus:ring-2 focus:ring-[#3ecf8e]/20 transition-all" placeholder="Search flights, routes..." type="text"/>
+</div>
+<div class="flex gap-4">
+<a class="text-[#3ecf8e] font-sans text-xs uppercase tracking-widest font-bold" href="#">Network Status</a>
+<a class="text-[#bbcabe] hover:text-white transition-colors text-xs uppercase tracking-widest font-bold" href="#">Live Map</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="h-6 w-[1px] bg-white/10 mx-2"></div>
+<button class="bg-gradient-to-br from-primary to-primary-container text-on-primary-container px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider shadow-[0_0_15px_rgba(96,236,168,0.2)] hover:shadow-[0_0_20px_rgba(96,236,168,0.4)] transition-all">
+                    New Booking
+                </button>
+<div class="flex items-center gap-3 ml-2 cursor-pointer">
+<div class="text-right">
+<p class="text-xs font-bold text-on-surface">Alex Rivera</p>
+<p class="text-[10px] text-on-surface-variant">Admin</p>
+</div>
+<img alt="Administrator Avatar" class="w-8 h-8 rounded-full border border-primary/20" data-alt="Professional profile photo of a male administrator" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdfs-4LG8Gm2I5W_BIF0O4mMPCID51Qdf6ZxuNVMDQOUHP2x34bE-I5ILLLE4tuLRfeh0TXAcJnfA3rbfzyNpPunRlvsO2M8HskyekBU0l3fKVhlJqpK4WvjgwtLhOthvrEOntAv7RBvttRHkCm5kXRUUeT0TMY1gkRDVLdOq7_7LvGnFUlTnMf9zJS57pP1zNvuZ2a_sd-5B0S53tQYGDCYZqWJj6kSSBnqj7C-XUp73ZkM7QEUAt_oumHkL0E_c6_E9Ww3IFK14"/>
+</div>
+</div>
+</header>
+<!-- CANVAS CONTENT -->
+<div class="mt-16 p-8 flex-1 overflow-y-auto custom-scrollbar flex gap-8">
+<div class="flex-1 space-y-8">
+<!-- SEARCH SECTION -->
+<section class="bg-surface-container rounded-2xl p-6 shadow-sm border border-outline-variant/5">
+<div class="flex items-center justify-between mb-6">
+<h2 class="text-headline-sm font-bold text-on-surface tracking-tight">Find Available Flights</h2>
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-surface-container-high rounded-full text-[10px] uppercase tracking-widest font-bold text-primary border border-primary/20">One Way</span>
+<span class="px-3 py-1 bg-surface-container-lowest rounded-full text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Round Trip</span>
+</div>
+</div>
+<div class="grid grid-cols-4 gap-4">
+<div class="space-y-2">
+<label class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant ml-1">From</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">flight_takeoff</span>
+<select class="w-full bg-surface-container-lowest border border-outline-variant/10 rounded-xl pl-10 pr-4 py-3 text-sm text-on-surface focus:ring-2 focus:ring-secondary/20 appearance-none cursor-pointer">
+<option>London (LHR)</option>
+<option>New York (JFK)</option>
+<option>Tokyo (NRT)</option>
+</select>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant ml-1">To</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">flight_land</span>
+<select class="w-full bg-surface-container-lowest border border-outline-variant/10 rounded-xl pl-10 pr-4 py-3 text-sm text-on-surface focus:ring-2 focus:ring-secondary/20 appearance-none cursor-pointer">
+<option>Singapore (SIN)</option>
+<option>Dubai (DXB)</option>
+<option>Paris (CDG)</option>
+</select>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant ml-1">Departure</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">calendar_month</span>
+<input class="w-full bg-surface-container-lowest border border-outline-variant/10 rounded-xl pl-10 pr-4 py-3 text-sm text-on-surface focus:ring-2 focus:ring-secondary/20" type="date" value="2024-11-20"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant ml-1">Passengers</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">person</span>
+<input class="w-full bg-surface-container-lowest border border-outline-variant/10 rounded-xl pl-10 pr-4 py-3 text-sm text-on-surface focus:ring-2 focus:ring-secondary/20" type="number" value="1"/>
+</div>
+</div>
+</div>
+</section>
+<!-- RESULTS SECTION -->
+<section class="space-y-4">
+<div class="flex items-center justify-between px-2">
+<p class="text-sm font-medium text-on-surface-variant">Available Flights (24)</p>
+<button class="text-xs text-secondary flex items-center gap-1 hover:underline">
+<span class="material-symbols-outlined text-sm">filter_list</span> Filter Results
+                        </button>
+</div>
+<!-- Flight Card 1 (Active/Selected State) -->
+<div class="bg-surface-container-high border-2 border-primary/40 rounded-2xl p-5 flex items-center gap-8 relative overflow-hidden transition-all duration-300">
+<div class="flex items-center gap-4 w-48">
+<div class="w-12 h-12 rounded-xl bg-white/5 p-2 flex items-center justify-center border border-white/5">
+<span class="material-symbols-outlined text-primary text-3xl">flight</span>
+</div>
+<div>
+<p class="text-sm font-bold text-on-surface">SkyWings Air</p>
+<p class="text-[10px] text-on-surface-variant font-medium">SW-402 • B787</p>
+</div>
+</div>
+<div class="flex-1 flex items-center justify-center gap-10">
+<div class="text-center">
+<h3 class="text-xl font-bold text-on-surface">08:30</h3>
+<p class="text-xs font-bold text-on-surface-variant">LHR</p>
+</div>
+<div class="flex-1 max-w-[140px] flex flex-col items-center gap-1">
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">13h 45m</p>
+<div class="w-full h-[1px] bg-outline-variant/30 relative flex justify-center items-center">
+<div class="absolute w-2 h-2 rounded-full bg-primary/20 border border-primary shadow-[0_0_8px_rgba(96,236,168,0.5)]"></div>
+</div>
+<p class="text-[10px] text-primary font-bold">Non-stop</p>
+</div>
+<div class="text-center">
+<h3 class="text-xl font-bold text-on-surface">11:15</h3>
+<p class="text-xs font-bold text-on-surface-variant">SIN</p>
+</div>
+</div>
+<div class="w-40 text-right">
+<p class="text-[10px] text-on-surface-variant mb-1 uppercase tracking-widest">Price from</p>
+<h2 class="text-2xl font-bold text-primary">$842.00</h2>
+</div>
+</div>
+<!-- Flight Card 2 -->
+<div class="bg-surface-container hover:bg-surface-container-high rounded-2xl p-5 flex items-center gap-8 group transition-all duration-300 cursor-pointer border border-transparent hover:border-outline-variant/20">
+<div class="flex items-center gap-4 w-48">
+<div class="w-12 h-12 rounded-xl bg-white/5 p-2 flex items-center justify-center border border-white/5">
+<span class="material-symbols-outlined text-on-surface-variant text-3xl">flight</span>
+</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Oceania Jet</p>
+<p class="text-[10px] text-on-surface-variant font-medium">OJ-119 • A350</p>
+</div>
+</div>
+<div class="flex-1 flex items-center justify-center gap-10">
+<div class="text-center">
+<h3 class="text-xl font-bold text-on-surface">14:15</h3>
+<p class="text-xs font-bold text-on-surface-variant">LHR</p>
+</div>
+<div class="flex-1 max-w-[140px] flex flex-col items-center gap-1">
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">16h 10m</p>
+<div class="w-full h-[1px] bg-outline-variant/30 relative flex justify-center items-center">
+<div class="absolute w-1.5 h-1.5 rounded-full bg-on-surface-variant"></div>
+</div>
+<p class="text-[10px] text-on-surface-variant font-bold">1 Stop (DXB)</p>
+</div>
+<div class="text-center">
+<h3 class="text-xl font-bold text-on-surface">19:25</h3>
+<p class="text-xs font-bold text-on-surface-variant">SIN</p>
+</div>
+</div>
+<div class="w-40 text-right">
+<p class="text-[10px] text-on-surface-variant mb-1 uppercase tracking-widest">Price from</p>
+<h2 class="text-2xl font-bold text-on-surface">$615.00</h2>
+</div>
+</div>
+</section>
+<!-- SEAT SELECTION SECTION -->
+<section class="bg-surface-container rounded-2xl p-8 shadow-sm border border-outline-variant/5">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h2 class="text-headline-sm font-bold text-on-surface tracking-tight">Select Seats</h2>
+<p class="text-xs text-on-surface-variant">Flight SW-402 • B787 Dreamliner</p>
+</div>
+<div class="flex gap-6 items-center">
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded bg-primary"></div>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Selected</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded bg-surface-container-highest"></div>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Available</span>
+</div>
+<div class="flex items-center gap-2 opacity-30">
+<div class="w-4 h-4 rounded bg-white/20"></div>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Taken</span>
+</div>
+</div>
+</div>
+<!-- Airplane Layout -->
+<div class="max-w-2xl mx-auto">
+<div class="relative bg-surface-container-lowest border border-outline-variant/10 rounded-[100px_100px_40px_40px] p-12 pb-20 overflow-hidden shadow-inner">
+<!-- Nose of plane -->
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-20 bg-gradient-to-b from-surface-container-highest/20 to-transparent flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant opacity-20 text-4xl">airplanemode_active</span>
+</div>
+<div class="space-y-12">
+<!-- Business Class -->
+<div class="space-y-4">
+<div class="flex justify-center"><p class="text-[10px] uppercase font-black tracking-[.25em] text-secondary">Business Class</p></div>
+<div class="grid grid-cols-4 gap-6 px-10">
+<!-- Row 1 -->
+<div class="w-12 h-12 rounded-xl bg-surface-container-highest border border-outline-variant/20 hover:border-primary/50 cursor-pointer flex items-center justify-center transition-all">1A</div>
+<div class="w-12 h-12 rounded-xl bg-surface-container-highest border border-outline-variant/20 hover:border-primary/50 cursor-pointer flex items-center justify-center transition-all">1B</div>
+<div class="w-12 h-12 rounded-xl bg-primary shadow-[0_0_15px_rgba(96,236,168,0.3)] flex items-center justify-center text-on-primary font-bold">1C</div>
+<div class="w-12 h-12 rounded-xl bg-surface-container-highest border border-outline-variant/20 hover:border-primary/50 cursor-pointer flex items-center justify-center transition-all">1D</div>
+<!-- Row 2 -->
+<div class="w-12 h-12 rounded-xl bg-white/5 border border-transparent opacity-20 flex items-center justify-center cursor-not-allowed">2A</div>
+<div class="w-12 h-12 rounded-xl bg-surface-container-highest border border-outline-variant/20 hover:border-primary/50 cursor-pointer flex items-center justify-center transition-all">2B</div>
+<div class="w-12 h-12 rounded-xl bg-surface-container-highest border border-outline-variant/20 hover:border-primary/50 cursor-pointer flex items-center justify-center transition-all">2C</div>
+<div class="w-12 h-12 rounded-xl bg-white/5 border border-transparent opacity-20 flex items-center justify-center cursor-not-allowed">2D</div>
+</div>
+</div>
+<!-- Aisle Break -->
+<div class="flex items-center gap-4 opacity-10">
+<div class="flex-1 h-[1px] bg-on-surface-variant"></div>
+<span class="material-symbols-outlined">meeting_room</span>
+<div class="flex-1 h-[1px] bg-on-surface-variant"></div>
+</div>
+<!-- Economy Class -->
+<div class="space-y-4">
+<div class="flex justify-center"><p class="text-[10px] uppercase font-black tracking-[.25em] text-on-surface-variant">Economy Premium</p></div>
+<div class="grid grid-cols-6 gap-3 px-4">
+<!-- Row 10 -->
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest border border-outline-variant/10 flex items-center justify-center text-xs hover:border-primary/50 transition-all cursor-pointer">10A</div>
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest border border-outline-variant/10 flex items-center justify-center text-xs hover:border-primary/50 transition-all cursor-pointer">10B</div>
+<div class="w-10 h-10"></div> <!-- Aisle -->
+<div class="w-10 h-10"></div> <!-- Aisle -->
+<div class="w-10 h-10 rounded-lg bg-white/5 opacity-20 flex items-center justify-center text-xs cursor-not-allowed">10C</div>
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest border border-outline-variant/10 flex items-center justify-center text-xs hover:border-primary/50 transition-all cursor-pointer">10D</div>
+<!-- Row 11 -->
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest border border-outline-variant/10 flex items-center justify-center text-xs hover:border-primary/50 transition-all cursor-pointer">11A</div>
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest border border-outline-variant/10 flex items-center justify-center text-xs hover:border-primary/50 transition-all cursor-pointer">11B</div>
+<div class="w-10 h-10"></div> <!-- Aisle -->
+<div class="w-10 h-10"></div> <!-- Aisle -->
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest border border-outline-variant/10 flex items-center justify-center text-xs hover:border-primary/50 transition-all cursor-pointer">11C</div>
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest border border-outline-variant/10 flex items-center justify-center text-xs hover:border-primary/50 transition-all cursor-pointer">11D</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- BOOKING SUMMARY SIDEBAR -->
+<aside class="w-96 space-y-6">
+<div class="bg-surface-container rounded-2xl overflow-hidden border border-outline-variant/5 shadow-2xl flex flex-col">
+<div class="p-6 bg-gradient-to-br from-surface-container-high to-surface-container border-b border-white/5">
+<h3 class="text-headline-sm font-bold text-on-surface tracking-tight">Booking Summary</h3>
+<p class="text-xs text-on-surface-variant">Review your selection</p>
+</div>
+<div class="p-6 space-y-6 flex-1">
+<!-- Flight Mini Card -->
+<div class="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant/10">
+<div class="flex items-center justify-between mb-4">
+<span class="text-[10px] font-bold text-primary uppercase tracking-widest">Outbound Flight</span>
+<span class="text-[10px] text-on-surface-variant">Wed, 20 Nov</span>
+</div>
+<div class="flex justify-between items-center">
+<div>
+<p class="text-sm font-bold">LHR</p>
+<p class="text-[10px] text-on-surface-variant">08:30</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant opacity-30">trending_flat</span>
+<div class="text-right">
+<p class="text-sm font-bold">SIN</p>
+<p class="text-[10px] text-on-surface-variant">11:15 (+1)</p>
+</div>
+</div>
+</div>
+<!-- Details List -->
+<div class="space-y-3">
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant">Base Fare</span>
+<span class="font-medium">$740.00</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant">Seat Selection (1C)</span>
+<span class="font-medium">$85.00</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant">Taxes &amp; Fees</span>
+<span class="font-medium">$17.00</span>
+</div>
+<div class="h-[1px] bg-outline-variant/10 my-2"></div>
+<div class="flex justify-between items-end">
+<span class="text-on-surface font-bold">Total Price</span>
+<span class="text-2xl font-black text-primary">$842.00</span>
+</div>
+</div>
+<!-- Promo Code -->
+<div class="relative group">
+<input class="w-full bg-surface-container-low border border-outline-variant/10 rounded-xl px-4 py-3 text-xs text-on-surface focus:ring-2 focus:ring-[#3ecf8e]/20 transition-all" placeholder="Promo code" type="text"/>
+<button class="absolute right-2 top-1/2 -translate-y-1/2 text-primary font-bold text-[10px] uppercase tracking-widest px-2 py-1 hover:bg-primary/10 rounded-lg">Apply</button>
+</div>
+</div>
+<div class="p-6 pt-0">
+<button class="w-full bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-black py-4 rounded-xl text-sm uppercase tracking-widest shadow-[0_10px_20px_-10px_rgba(96,236,168,0.5)] hover:scale-[1.02] active:scale-[0.98] transition-all">
+                            Complete Booking
+                        </button>
+</div>
+</div>
+<!-- Assistance Card -->
+<div class="p-6 rounded-2xl border border-outline-variant/10 bg-surface-container-low flex items-start gap-4">
+<div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-secondary">support_agent</span>
+</div>
+<div>
+<h4 class="text-sm font-bold text-on-surface">Need help?</h4>
+<p class="text-[11px] text-on-surface-variant leading-relaxed">Our flight coordinators are available 24/7 for booking assistance.</p>
+<button class="mt-2 text-[10px] font-black text-secondary uppercase tracking-widest hover:underline">Start Live Chat</button>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- TOAST NOTIFICATIONS (Fixed Position) -->
+<div class="fixed bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 z-[100] pointer-events-none">
+<!-- Success Toast -->
+<div class="glass-panel border border-primary/20 rounded-2xl px-6 py-4 flex items-center gap-4 shadow-2xl animate-in slide-in-from-bottom-8 duration-300 pointer-events-auto">
+<div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div>
+<p class="text-xs font-bold text-on-surface">Seat Selected</p>
+<p class="text-[10px] text-on-surface-variant">Seat 1C has been added to your reservation.</p>
+</div>
+<button class="ml-4 text-on-surface-variant hover:text-white transition-colors">
+<span class="material-symbols-outlined text-sm">close</span>
+</button>
+</div>
+</div>
+<!-- Background Decoration -->
+<div class="fixed -top-24 -right-24 w-96 h-96 bg-primary/5 blur-[120px] rounded-full pointer-events-none"></div>
+<div class="fixed -bottom-24 -left-24 w-96 h-96 bg-secondary/5 blur-[120px] rounded-full pointer-events-none"></div>
+</body></html>

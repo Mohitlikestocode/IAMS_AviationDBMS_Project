@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>IAMS | Command Center Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#0a0e16",
+                        "on-background": "#e0e2ed",
+                        "surface-container-low": "#181c23",
+                        "primary-fixed": "#d8e2ff",
+                        "on-error": "#690005",
+                        "background": "#10131b",
+                        "surface-bright": "#363942",
+                        "outline": "#8c909f",
+                        "on-tertiary": "#213145",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-secondary-container": "#aeb9d0",
+                        "error-container": "#93000a",
+                        "secondary": "#bcc7de",
+                        "on-primary-container": "#00285d",
+                        "secondary-container": "#3e495d",
+                        "surface-dim": "#10131b",
+                        "secondary-fixed-dim": "#bcc7de",
+                        "on-tertiary-fixed": "#0b1c30",
+                        "inverse-on-surface": "#2d3039",
+                        "tertiary-container": "#8292aa",
+                        "on-tertiary-container": "#1a2b3e",
+                        "surface-tint": "#adc6ff",
+                        "surface-container-high": "#262a32",
+                        "on-secondary-fixed-variant": "#3c475a",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-secondary": "#263143",
+                        "tertiary": "#b7c8e1",
+                        "surface-container-highest": "#31353d",
+                        "on-primary": "#002e6a",
+                        "inverse-surface": "#e0e2ed",
+                        "secondary-fixed": "#d8e3fb",
+                        "outline-variant": "#424754",
+                        "on-primary-fixed": "#001a42",
+                        "on-tertiary-fixed-variant": "#38485d",
+                        "surface-container": "#1c2027",
+                        "on-surface": "#e0e2ed",
+                        "on-secondary-fixed": "#111c2d",
+                        "surface": "#10131b",
+                        "inverse-primary": "#005ac2",
+                        "primary-container": "#4d8eff",
+                        "on-surface-variant": "#c2c6d6",
+                        "tertiary-fixed": "#d3e4fe",
+                        "tertiary-fixed-dim": "#b7c8e1",
+                        "surface-variant": "#31353d",
+                        "on-error-container": "#ffdad6",
+                        "error": "#ffb4ab",
+                        "primary": "#adc6ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #10131b;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(38, 42, 50, 0.6);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+        }
+        .hud-scanline {
+            background: linear-gradient(to bottom, transparent 50%, rgba(173, 198, 255, 0.02) 50%);
+            background-size: 100% 4px;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-on-surface overflow-hidden selection:bg-primary selection:text-on-primary">
+<!-- Atmospheric Background -->
+<div class="fixed inset-0 z-0">
+<div class="absolute inset-0 bg-gradient-to-tr from-surface-container-lowest via-surface-dim to-surface-container-low"></div>
+<img class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-20 scale-110" data-alt="dramatic wide shot of a commercial jet silhouette flying through a dark deep navy stratospheric sky with distant faint stars" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1hewYXjpCh4CiEXCnW6XfE8Rih60ns_Mk1C8VsNcLVxB2IWxPMA-gbSls6b-4fmtHvKP7tSmRddn-MhOGOsGkSUO_ujT3uzeHzizcu-mmED4Wh0Ev7FUCHBEadLj_8KoZ_oTSifLW1yAHbUN0vkLHixI9baaOhVq_K0KrZManyhrVpcAu7W_0IN-MQ21EQylfA-OyUY3f7-vxrtIi1ytnRrCxCRMZQi8C18MxylZsHTagMSbv7xKcqAwhH6awd0UaJRD8Cx_SV88"/>
+<div class="absolute inset-0 hud-scanline pointer-events-none"></div>
+<!-- Ambient Glow -->
+<div class="absolute top-1/4 left-1/3 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]"></div>
+</div>
+<!-- Main Viewport -->
+<main class="relative z-10 flex flex-col items-center justify-center min-h-screen p-6">
+<!-- Brand Identity -->
+<header class="mb-12 text-center">
+<div class="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-surface-container-highest mb-6 shadow-[0_0_40px_rgba(173,198,255,0.1)] group">
+<span class="material-symbols-outlined text-primary text-4xl" data-icon="flight_takeoff">flight_takeoff</span>
+</div>
+<h1 class="text-3xl font-extrabold tracking-[-0.03em] text-on-background uppercase">
+                IAMS
+            </h1>
+<p class="text-on-surface-variant font-medium tracking-wide text-xs mt-1">
+                HIGH-ALTITUDE COMMAND CENTER
+            </p>
+</header>
+<!-- Auth Card -->
+<div class="w-full max-w-md">
+<div class="glass-panel p-8 md:p-10 rounded-[2rem] border border-white/5 shadow-2xl">
+<div class="mb-8">
+<h2 class="text-2xl font-bold tracking-tight text-on-background">System Access</h2>
+<p class="text-on-surface-variant text-sm mt-2">Enter credentials for secure flight operations.</p>
+</div>
+<form class="space-y-6">
+<!-- Email Field -->
+<div class="space-y-2">
+<label class="text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant ml-1">Controller Email</label>
+<div class="relative group">
+<div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline text-lg" data-icon="alternate_email">alternate_email</span>
+</div>
+<input class="w-full bg-surface-container-lowest/80 border-none rounded-xl py-4 pl-12 pr-4 text-on-surface placeholder:text-outline/50 focus:ring-1 focus:ring-primary/50 transition-all text-sm" placeholder="name@command.iams" type="email"/>
+</div>
+</div>
+<!-- Password Field -->
+<div class="space-y-2">
+<div class="flex justify-between items-end ml-1">
+<label class="text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant">Access Sequence</label>
+<a class="text-[10px] font-bold text-primary hover:text-primary-fixed-dim transition-colors" href="#">FORGOT KEY?</a>
+</div>
+<div class="relative group">
+<div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline text-lg" data-icon="lock">lock</span>
+</div>
+<input class="w-full bg-surface-container-lowest/80 border-none rounded-xl py-4 pl-12 pr-4 text-on-surface placeholder:text-outline/50 focus:ring-1 focus:ring-primary/50 transition-all text-sm" placeholder="••••••••" type="password"/>
+</div>
+</div>
+<!-- Action Button -->
+<div class="pt-4">
+<button class="w-full bg-primary hover:bg-primary-container text-on-primary-container font-bold py-4 rounded-xl transition-all duration-300 shadow-[0_0_20px_rgba(173,198,255,0.15)] active:scale-95 flex items-center justify-center gap-2 group" type="submit">
+<span>INITIALIZE SESSION</span>
+<span class="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</form>
+<!-- Footer Links -->
+<div class="mt-10 pt-8 border-t border-white/5 text-center">
+<p class="text-sm text-on-surface-variant">
+                        New personnel? 
+                        <a class="text-primary font-bold ml-1 hover:underline underline-offset-4 decoration-primary/30" href="#">Create an account</a>
+</p>
+</div>
+</div>
+<!-- Operational Status (Decorative) -->
+<div class="mt-8 grid grid-cols-3 gap-4">
+<div class="flex flex-col items-center p-3 rounded-xl bg-surface-container-low/50 border border-white/5">
+<span class="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider mb-1">Status</span>
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container shadow-[0_0_8px_#4d8eff]"></span>
+<span class="text-[10px] font-mono text-on-surface font-bold">READY</span>
+</div>
+</div>
+<div class="flex flex-col items-center p-3 rounded-xl bg-surface-container-low/50 border border-white/5">
+<span class="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider mb-1">Region</span>
+<span class="text-[10px] font-mono text-on-surface font-bold uppercase">Global-4</span>
+</div>
+<div class="flex flex-col items-center p-3 rounded-xl bg-surface-container-low/50 border border-white/5">
+<span class="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider mb-1">Enc</span>
+<span class="text-[10px] font-mono text-on-surface font-bold uppercase">AES-256</span>
+</div>
+</div>
+</div>
+<!-- System Footer -->
+<footer class="mt-12 opacity-40 hover:opacity-100 transition-opacity">
+<div class="flex items-center gap-6">
+<span class="text-[10px] font-bold tracking-[0.2em] uppercase">© 2024 IAMS Corp</span>
+<span class="w-1 h-1 rounded-full bg-outline"></span>
+<span class="text-[10px] font-bold tracking-[0.2em] uppercase">Terms of Protocol</span>
+<span class="w-1 h-1 rounded-full bg-outline"></span>
+<span class="text-[10px] font-bold tracking-[0.2em] uppercase">Privacy Grid</span>
+</div>
+</footer>
+</main>
+<!-- UI Decor Overlays -->
+<div class="fixed top-8 right-8 z-20 hidden lg:block">
+<div class="flex flex-col items-end">
+<span class="text-[10px] font-mono text-primary leading-none">STRAT-X v2.4.01</span>
+<div class="w-24 h-[1px] bg-primary/20 mt-1"></div>
+</div>
+</div>
+<div class="fixed bottom-8 left-8 z-20 hidden lg:block">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant/40 text-xl" data-icon="hub">hub</span>
+<div class="h-8 w-[1px] bg-white/10"></div>
+<span class="text-[10px] font-mono text-on-surface-variant/60 leading-tight">NODE: LHR-PRIMARY-01<br/>CONNECTED: TRUE</span>
+</div>
+</div>
+</body></html>

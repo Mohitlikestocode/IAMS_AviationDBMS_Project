@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#0a0e16",
+                        "on-background": "#e0e2ed",
+                        "surface-container-low": "#181c23",
+                        "primary-fixed": "#d8e2ff",
+                        "on-error": "#690005",
+                        "background": "#10131b",
+                        "surface-bright": "#363942",
+                        "outline": "#8c909f",
+                        "on-tertiary": "#213145",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-secondary-container": "#aeb9d0",
+                        "error-container": "#93000a",
+                        "secondary": "#bcc7de",
+                        "on-primary-container": "#00285d",
+                        "secondary-container": "#3e495d",
+                        "surface-dim": "#10131b",
+                        "secondary-fixed-dim": "#bcc7de",
+                        "on-tertiary-fixed": "#0b1c30",
+                        "inverse-on-surface": "#2d3039",
+                        "tertiary-container": "#8292aa",
+                        "on-tertiary-container": "#1a2b3e",
+                        "surface-tint": "#adc6ff",
+                        "surface-container-high": "#262a32",
+                        "on-secondary-fixed-variant": "#3c475a",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-secondary": "#263143",
+                        "tertiary": "#b7c8e1",
+                        "surface-container-highest": "#31353d",
+                        "on-primary": "#002e6a",
+                        "inverse-surface": "#e0e2ed",
+                        "secondary-fixed": "#d8e3fb",
+                        "outline-variant": "#424754",
+                        "on-primary-fixed": "#001a42",
+                        "on-tertiary-fixed-variant": "#38485d",
+                        "surface-container": "#1c2027",
+                        "on-surface": "#e0e2ed",
+                        "on-secondary-fixed": "#111c2d",
+                        "surface": "#10131b",
+                        "inverse-primary": "#005ac2",
+                        "primary-container": "#4d8eff",
+                        "on-surface-variant": "#c2c6d6",
+                        "tertiary-fixed": "#d3e4fe",
+                        "tertiary-fixed-dim": "#b7c8e1",
+                        "surface-variant": "#31353d",
+                        "on-error-container": "#ffdad6",
+                        "error": "#ffb4ab",
+                        "primary": "#adc6ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"],
+                        "mono": ["JetBrains Mono"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            letter-spacing: -0.01em;
+        }
+        .tight-tracking {
+            letter-spacing: -0.02em;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background selection:bg-primary/30 min-h-screen">
+<!-- SideNavBar Shell -->
+<aside class="h-screen w-64 fixed left-0 top-0 flex flex-col bg-[#0a0e16] shadow-[1px_0_0_0_rgba(255,255,255,0.05)] z-50">
+<div class="flex flex-col h-full py-6 px-4 gap-2">
+<!-- Brand Header -->
+<div class="flex items-center gap-3 px-2 mb-8">
+<div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">flight_takeoff</span>
+</div>
+<div>
+<h1 class="text-xl font-bold tracking-tighter text-[#adc6ff]">IAMS</h1>
+<p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Command Center</p>
+</div>
+</div>
+<!-- Primary Navigation -->
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-[#31353d]/20 transition-colors duration-200 font-['Inter'] tracking-[-0.01em] text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-lg">dashboard</span>
+                    Dashboard
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-[#31353d]/20 transition-colors duration-200 font-['Inter'] tracking-[-0.01em] text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-lg">table_chart</span>
+                    Tables
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-[#31353d]/20 transition-colors duration-200 font-['Inter'] tracking-[-0.01em] text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-lg">terminal</span>
+                    SQL Console
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-[#31353d]/20 transition-colors duration-200 font-['Inter'] tracking-[-0.01em] text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-lg">psychology</span>
+                    AI Query
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-[#31353d]/20 transition-colors duration-200 font-['Inter'] tracking-[-0.01em] text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-lg">flight_takeoff</span>
+                    Flights
+                </a>
+<!-- Active Tab: Passengers -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-[#adc6ff] bg-[#31353d]/30 border-r-2 border-[#adc6ff] font-['Inter'] tracking-[-0.01em] text-sm font-medium active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">group</span>
+                    Passengers
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-[#31353d]/20 transition-colors duration-200 font-['Inter'] tracking-[-0.01em] text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-lg">confirmation_number</span>
+                    Bookings
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-[#31353d]/20 transition-colors duration-200 font-['Inter'] tracking-[-0.01em] text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-lg">analytics</span>
+                    Analytics
+                </a>
+</nav>
+<!-- Footer Navigation -->
+<div class="mt-auto pt-6 border-t border-white/5 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-[#31353d]/20 transition-colors duration-200 font-['Inter'] tracking-[-0.01em] text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-lg">settings</span>
+                    Settings
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-[#31353d]/20 transition-colors duration-200 font-['Inter'] tracking-[-0.01em] text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-lg">help</span>
+                    Support
+                </a>
+<button class="w-full mt-4 bg-primary text-on-primary py-2.5 rounded-xl font-bold text-sm hover:opacity-90 active:scale-[0.98] transition-all">
+                    New Flight
+                </button>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 min-h-screen flex flex-col">
+<!-- TopNavBar Shell -->
+<header class="h-16 w-full flex justify-between items-center px-8 bg-[#10131b]/80 backdrop-blur-xl border-b border-white/5 sticky top-0 z-40">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm">search</span>
+<input class="w-full bg-surface-container-lowest border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-1 focus:ring-primary/30 transition-all placeholder:text-slate-600" placeholder="Search passenger records..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<button class="hover:text-[#adc6ff] hover:bg-white/5 rounded-full p-2 transition-all active:opacity-80">
+<span class="material-symbols-outlined text-slate-400">notifications</span>
+</button>
+<button class="hover:text-[#adc6ff] hover:bg-white/5 rounded-full p-2 transition-all active:opacity-80">
+<span class="material-symbols-outlined text-slate-400">help_outline</span>
+</button>
+</div>
+<div class="h-8 w-[1px] bg-white/5"></div>
+<div class="flex items-center gap-3">
+<img class="w-8 h-8 rounded-full border border-white/10 object-cover" data-alt="portrait of a professional male chief flight controller with a serious but approachable expression in a modern office environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVNW5Hb0MnPySVhAX65fSt4frlFot_0BKn3saCmDIgcS4QE_wRx5HcvWUgwzTF5nQkqPckpvuH1hGIekWXvZM6Zbsm94hZHTq2EtXheqA1Hy8Ozbjp78IyZYeFZbgHQa7vCxMu8DfjRFPt-GNY-5Qa6kZGNnFynhzYSTGsuxRU6c1-D2wjDkX9eTwPlzQM5MxxuZfrSQ0PoPw1RVSheUV_cYPnhHj2NZmQpY6XBtZbIFKCi1q178EccClx54-YfTt0uTBYBnBpfM8"/>
+<span class="text-sm font-medium text-on-surface">Chief Controller</span>
+</div>
+</div>
+</header>
+<!-- Page Header & Actions -->
+<section class="px-8 pt-8 pb-6">
+<div class="flex items-end justify-between">
+<div>
+<h2 class="text-3xl font-extrabold tight-tracking text-on-background">Passengers</h2>
+<p class="text-on-surface-variant text-sm mt-1">Manage manifest data for 12,482 active passenger profiles.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface-container-highest/40 hover:bg-surface-container-highest text-on-surface text-sm font-medium transition-all border border-white/5">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+                        Filters
+                    </button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-on-primary text-sm font-bold shadow-[0_0_20px_rgba(173,198,255,0.15)] hover:opacity-90 active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-sm">person_add</span>
+                        Add Passenger
+                    </button>
+</div>
+</div>
+</section>
+<!-- Main Table Grid Section -->
+<section class="px-8 pb-12 flex-1">
+<div class="bg-surface-container-low rounded-xl overflow-hidden shadow-2xl">
+<!-- Table Headers -->
+<div class="grid grid-cols-12 gap-4 px-6 py-4 border-b border-white/5 bg-surface-container-high/30">
+<div class="col-span-1 text-[10px] font-bold uppercase tracking-widest text-slate-500">ID</div>
+<div class="col-span-3 text-[10px] font-bold uppercase tracking-widest text-slate-500">Name / Email</div>
+<div class="col-span-2 text-[10px] font-bold uppercase tracking-widest text-slate-500">Passport No.</div>
+<div class="col-span-2 text-[10px] font-bold uppercase tracking-widest text-slate-500">Nationality</div>
+<div class="col-span-3 text-[10px] font-bold uppercase tracking-widest text-slate-500">Last Flight</div>
+<div class="col-span-1"></div>
+</div>
+<!-- Table Rows -->
+<div class="divide-y divide-white/5">
+<!-- Row 1 -->
+<div class="grid grid-cols-12 gap-4 px-6 py-5 items-center hover:bg-surface-container-high/50 transition-colors group cursor-pointer">
+<div class="col-span-1">
+<span class="font-mono text-xs text-primary-fixed-dim bg-primary/5 px-2 py-1 rounded">PS-9021</span>
+</div>
+<div class="col-span-3 flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-surface-container-highest flex items-center justify-center text-xs font-bold text-on-surface-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Professional headshot of a female passenger, bright lighting, corporate aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMC_J7g9lHKSCYFtLIk6XQzzjlVPVf5gRSr6EpV433I2dehtJEzuxZvBfLfKI_-SVw__PeLQLDowiOifDnOjdlZ1q1Ztl2Oc4a22Us8Tc3bt5DkS5iT8zhkdDjqhfCOFThNu1oQYLCthoiI9HaA5iUEN37Xt4zIsHP2O2slV6MkHnqOvJ1N9CsecKI4R56cp9yogCJ9ZgSMeHMT6H_twVSgElUhh862MBZmFMh7nNdsDZSiNBWObYgi4hVyEfNh4evftzD90re8AU"/>
+</div>
+<div class="flex flex-col">
+<span class="text-sm font-semibold text-on-surface">Elena Rodriguez</span>
+<span class="text-xs text-on-surface-variant">e.rodriguez@example.com</span>
+</div>
+</div>
+<div class="col-span-2">
+<span class="text-sm text-on-surface-variant font-mono">B92004551</span>
+</div>
+<div class="col-span-2 flex items-center gap-2">
+<span class="text-sm text-on-surface">Spain</span>
+</div>
+<div class="col-span-3 flex flex-col">
+<span class="text-sm text-on-surface">Madrid (MAD) → Tokyo (HND)</span>
+<span class="text-[11px] text-slate-500">14 Oct 2023 · HA-442</span>
+</div>
+<div class="col-span-1 flex justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1 hover:bg-white/10 rounded">
+<span class="material-symbols-outlined text-lg">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="grid grid-cols-12 gap-4 px-6 py-5 items-center hover:bg-surface-container-high/50 transition-colors group cursor-pointer">
+<div class="col-span-1">
+<span class="font-mono text-xs text-primary-fixed-dim bg-primary/5 px-2 py-1 rounded">PS-8842</span>
+</div>
+<div class="col-span-3 flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-surface-container-highest flex items-center justify-center text-xs font-bold text-on-surface-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Modern portrait of a male passenger with stylish glasses, dark background, cinematic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsSIGrhosd_TnLGnakmP_COiQcXJ5_hDzQUYEdyVXsupcASzjajARPFvns2LNr3pCssLx0tAISgORRZp2cvkwyGxt5P2HFX676yVVcunixWDEf2lY1sKOvZPFsEbSe9FqDr0KGvmCUKP0O86ADWcC8MOSBufTNetHxGuqMlErrvPXUhNPGjFt7pr0DBV2IIWs_aSBbv32PRYSIN8QNneALPf1vXkzGzKRcerm2s8smeSgsQpxtlqvwaCqR9blwX2TpRkY39CwtzzU"/>
+</div>
+<div class="flex flex-col">
+<span class="text-sm font-semibold text-on-surface">Marcus Chen</span>
+<span class="text-xs text-on-surface-variant">m.chen@corporate.hk</span>
+</div>
+</div>
+<div class="col-span-2">
+<span class="text-sm text-on-surface-variant font-mono">K88120092</span>
+</div>
+<div class="col-span-2 flex items-center gap-2">
+<span class="text-sm text-on-surface">Hong Kong</span>
+</div>
+<div class="col-span-3 flex flex-col">
+<span class="text-sm text-on-surface font-medium text-primary">Boarding Now</span>
+<span class="text-[11px] text-slate-500">London (LHR) → NYC (JFK)</span>
+</div>
+<div class="col-span-1 flex justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1 hover:bg-white/10 rounded">
+<span class="material-symbols-outlined text-lg">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Row 3 -->
+<div class="grid grid-cols-12 gap-4 px-6 py-5 items-center hover:bg-surface-container-high/50 transition-colors group cursor-pointer">
+<div class="col-span-1">
+<span class="font-mono text-xs text-primary-fixed-dim bg-primary/5 px-2 py-1 rounded">PS-7731</span>
+</div>
+<div class="col-span-3 flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-surface-container-highest flex items-center justify-center text-xs font-bold text-on-surface-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Elegant close up portrait of a young woman traveler, natural light, soft focus background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAG_4TBIRpUh_r_P62GtMO7yVfIN8GX30HkyGtfvBmPpQg_Z_E-B3IVDZSFwqW8P8T0BPgW00DCVb60cJgNSVFEP0Ffc7Mi3880YP2VPnJLrxUnBvDnoM_Wq0If_3AWcX_GHMfuWNoVfZE8FKIczpbFmom2oPTx8griIamdMJv2pn96kxEz_VtcArPFqFJ2pNuYTaKnkK4_C_VlfIvV6ZuBYK-p-8tNksXdn0nu6CBGUeQ_p7xK_E33VIwsc6Ez9T1pnZr-lBsSP2k"/>
+</div>
+<div class="flex flex-col">
+<span class="text-sm font-semibold text-on-surface">Sophie Laurent</span>
+<span class="text-xs text-on-surface-variant">s.laurent@paris.fr</span>
+</div>
+</div>
+<div class="col-span-2">
+<span class="text-sm text-on-surface-variant font-mono">FA-992031</span>
+</div>
+<div class="col-span-2 flex items-center gap-2">
+<span class="text-sm text-on-surface">France</span>
+</div>
+<div class="col-span-3 flex flex-col">
+<span class="text-sm text-on-surface">Paris (CDG) → Dubai (DXB)</span>
+<span class="text-[11px] text-slate-500">12 Oct 2023 · HA-109</span>
+</div>
+<div class="col-span-1 flex justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1 hover:bg-white/10 rounded">
+<span class="material-symbols-outlined text-lg">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Row 4 -->
+<div class="grid grid-cols-12 gap-4 px-6 py-5 items-center hover:bg-surface-container-high/50 transition-colors group cursor-pointer">
+<div class="col-span-1">
+<span class="font-mono text-xs text-primary-fixed-dim bg-primary/5 px-2 py-1 rounded">PS-4410</span>
+</div>
+<div class="col-span-3 flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-surface-container-highest flex items-center justify-center text-xs font-bold text-on-surface-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Portrait of a smiling mature man, professional headshot style, high end photography" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtqNIPI6C3_UrAjkd3eM3Frw6aKTsgt3_fK9RBhgQ0LUGCUsCUVGeU16dFc696JwjKDQV1ktW8o1XnTIpLbK5YVwHAldrvywfiKGE5oDXlowiIYea7HlfCL__GSDzblC3_ScxIGy7pv9Hm7R-YLh0CfHfAAlEjk7TVXzYF_ffcqLMdIrNSq0tTEGzerFAyRyCDSGbGUOcOdRG6WS3Nlo7TItmfRzbqmG9Z4Ttsgqk2o_eywfa5Ro7Pa81R64BIjvfpMHLw_vPWJCo"/>
+</div>
+<div class="flex flex-col">
+<span class="text-sm font-semibold text-on-surface">James McAllister</span>
+<span class="text-xs text-on-surface-variant">j.mc@global.com</span>
+</div>
+</div>
+<div class="col-span-2">
+<span class="text-sm text-on-surface-variant font-mono">U12004412</span>
+</div>
+<div class="col-span-2 flex items-center gap-2">
+<span class="text-sm text-on-surface">USA</span>
+</div>
+<div class="col-span-3 flex flex-col">
+<span class="text-sm text-on-surface">Los Angeles (LAX) → Seoul (ICN)</span>
+<span class="text-[11px] text-slate-500">08 Oct 2023 · HA-812</span>
+</div>
+<div class="col-span-1 flex justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1 hover:bg-white/10 rounded">
+<span class="material-symbols-outlined text-lg">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Row 5 -->
+<div class="grid grid-cols-12 gap-4 px-6 py-5 items-center hover:bg-surface-container-high/50 transition-colors group cursor-pointer">
+<div class="col-span-1">
+<span class="font-mono text-xs text-primary-fixed-dim bg-primary/5 px-2 py-1 rounded">PS-2019</span>
+</div>
+<div class="col-span-3 flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-surface-container-highest flex items-center justify-center text-xs font-bold text-on-surface-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Artistic portrait of a young woman with a neutral expression, soft lighting, minimalistic aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1jjYaZcsShw70gZMTNG8igKtj-_dds8oB-e_Nd3Xk95rjqTHVS7Qdb9sykW7P2TXV0Qmvcx8qpFw2ZXGfOiMJhm7JGssyvBShbA9fYyNaG3mQmt-IUImBdUG_4LLYnDLbOXN5DEfdZYFs6H77QW-UZ9F7AgD5_tq-aMWDaNMAxYjKlYdp8pbjJBNPFJz3JA9PTf80Cy8uMWeHjff9V89HMqSJFqt5tzAwVR0HODwN3bxohdmWLYZ2BtM7L49I2PFLdMKP14B2UHQ"/>
+</div>
+<div class="flex flex-col">
+<span class="text-sm font-semibold text-on-surface">Yara Al-Sayed</span>
+<span class="text-xs text-on-surface-variant">y.sayed@emirates.ae</span>
+</div>
+</div>
+<div class="col-span-2">
+<span class="text-sm text-on-surface-variant font-mono">Z0091223</span>
+</div>
+<div class="col-span-2 flex items-center gap-2">
+<span class="text-sm text-on-surface">UAE</span>
+</div>
+<div class="col-span-3 flex flex-col">
+<span class="text-sm text-on-surface">Abu Dhabi (AUH) → Berlin (BER)</span>
+<span class="text-[11px] text-slate-500">01 Oct 2023 · HA-201</span>
+</div>
+<div class="col-span-1 flex justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1 hover:bg-white/10 rounded">
+<span class="material-symbols-outlined text-lg">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Pagination Footer -->
+<div class="bg-surface-container-highest/20 px-6 py-4 flex items-center justify-between border-t border-white/5">
+<span class="text-xs text-on-surface-variant">Showing 1 to 5 of 12,482 records</span>
+<div class="flex items-center gap-2">
+<button class="p-1.5 rounded-lg border border-white/5 text-slate-500 hover:bg-white/5 disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<div class="flex gap-1 px-2">
+<button class="w-8 h-8 rounded-lg bg-primary text-on-primary text-xs font-bold">1</button>
+<button class="w-8 h-8 rounded-lg hover:bg-white/5 text-on-surface-variant text-xs">2</button>
+<button class="w-8 h-8 rounded-lg hover:bg-white/5 text-on-surface-variant text-xs">3</button>
+<span class="w-8 h-8 flex items-center justify-center text-slate-600 text-xs">...</span>
+<button class="w-8 h-8 rounded-lg hover:bg-white/5 text-on-surface-variant text-xs">2497</button>
+</div>
+<button class="p-1.5 rounded-lg border border-white/5 text-slate-300 hover:bg-white/5">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Stats Overview Row -->
+<section class="px-8 pb-12">
+<div class="grid grid-cols-4 gap-6">
+<div class="bg-surface-container-low p-6 rounded-xl border border-white/5 relative overflow-hidden group">
+<div class="flex flex-col relative z-10">
+<span class="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">New Registrations</span>
+<span class="text-2xl font-extrabold text-primary">+842</span>
+<span class="text-[10px] text-slate-500 mt-2">Past 30 days</span>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-10 scale-150 rotate-12 transition-transform group-hover:scale-125">
+<span class="material-symbols-outlined text-9xl">person_add</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl border border-white/5 relative overflow-hidden group">
+<div class="flex flex-col relative z-10">
+<span class="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">Frequent Flyers</span>
+<span class="text-2xl font-extrabold text-on-surface">3,201</span>
+<span class="text-[10px] text-slate-500 mt-2">Elite Status (Gold+)</span>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-10 scale-150 rotate-12 transition-transform group-hover:scale-125">
+<span class="material-symbols-outlined text-9xl">workspace_premium</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl border border-white/5 relative overflow-hidden group">
+<div class="flex flex-col relative z-10">
+<span class="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">Active Bookings</span>
+<span class="text-2xl font-extrabold text-on-surface">1,124</span>
+<span class="text-[10px] text-slate-500 mt-2">Next 48 hours</span>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-10 scale-150 rotate-12 transition-transform group-hover:scale-125">
+<span class="material-symbols-outlined text-9xl">confirmation_number</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl border border-white/5 relative overflow-hidden group">
+<div class="flex flex-col relative z-10">
+<span class="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">Flagged Profiles</span>
+<span class="text-2xl font-extrabold text-error">12</span>
+<span class="text-[10px] text-slate-500 mt-2">Requires verification</span>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-10 scale-150 rotate-12 transition-transform group-hover:scale-125">
+<span class="material-symbols-outlined text-9xl">priority_high</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Floating Action Trigger (Suppressed on Details, but kept here for dashboard relevance) -->
+<button class="fixed right-8 bottom-8 w-14 h-14 bg-primary text-on-primary rounded-full shadow-[0_8px_32px_rgba(173,198,255,0.3)] flex items-center justify-center hover:scale-110 active:scale-95 transition-transform z-50">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add</span>
+</button>
+</body></html>

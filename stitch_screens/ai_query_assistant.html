@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>IAMS AI Query Console</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#0a0e16",
+                        "on-background": "#e0e2ed",
+                        "surface-container-low": "#181c23",
+                        "primary-fixed": "#d8e2ff",
+                        "on-error": "#690005",
+                        "background": "#10131b",
+                        "surface-bright": "#363942",
+                        "outline": "#8c909f",
+                        "on-tertiary": "#213145",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-secondary-container": "#aeb9d0",
+                        "error-container": "#93000a",
+                        "secondary": "#bcc7de",
+                        "on-primary-container": "#00285d",
+                        "secondary-container": "#3e495d",
+                        "surface-dim": "#10131b",
+                        "secondary-fixed-dim": "#bcc7de",
+                        "on-tertiary-fixed": "#0b1c30",
+                        "inverse-on-surface": "#2d3039",
+                        "tertiary-container": "#8292aa",
+                        "on-tertiary-container": "#1a2b3e",
+                        "surface-tint": "#adc6ff",
+                        "surface-container-high": "#262a32",
+                        "on-secondary-fixed-variant": "#3c475a",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-secondary": "#263143",
+                        "tertiary": "#b7c8e1",
+                        "surface-container-highest": "#31353d",
+                        "on-primary": "#002e6a",
+                        "inverse-surface": "#e0e2ed",
+                        "secondary-fixed": "#d8e3fb",
+                        "outline-variant": "#424754",
+                        "on-primary-fixed": "#001a42",
+                        "on-tertiary-fixed-variant": "#38485d",
+                        "surface-container": "#1c2027",
+                        "on-surface": "#e0e2ed",
+                        "on-secondary-fixed": "#111c2d",
+                        "surface": "#10131b",
+                        "inverse-primary": "#005ac2",
+                        "primary-container": "#4d8eff",
+                        "on-surface-variant": "#c2c6d6",
+                        "tertiary-fixed": "#d3e4fe",
+                        "tertiary-fixed-dim": "#b7c8e1",
+                        "surface-variant": "#31353d",
+                        "on-error-container": "#ffdad6",
+                        "error": "#ffb4ab",
+                        "primary": "#adc6ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(38, 42, 50, 0.6);
+            backdrop-filter: blur(24px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen overflow-hidden">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 flex flex-col bg-[#0a0e16] shadow-[1px_0_0_0_rgba(255,255,255,0.05)] py-6 px-4 gap-2 z-50">
+<div class="flex items-center gap-3 px-4 mb-8">
+<div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">flight_takeoff</span>
+</div>
+<div>
+<h1 class="text-xl font-bold tracking-tighter text-[#adc6ff]">IAMS</h1>
+<p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Command Center</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl font-['Inter'] tracking-[-0.01em] text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-[#31353d]/20 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span> Dashboard
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl font-['Inter'] tracking-[-0.01em] text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-[#31353d]/20 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">table_chart</span> Tables
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl font-['Inter'] tracking-[-0.01em] text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-[#31353d]/20 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">terminal</span> SQL Console
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl font-['Inter'] tracking-[-0.01em] text-sm font-medium text-[#adc6ff] bg-[#31353d]/30 border-r-2 border-[#adc6ff]" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">psychology</span> AI Query
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl font-['Inter'] tracking-[-0.01em] text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-[#31353d]/20 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">flight_takeoff</span> Flights
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl font-['Inter'] tracking-[-0.01em] text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-[#31353d]/20 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">group</span> Passengers
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl font-['Inter'] tracking-[-0.01em] text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-[#31353d]/20 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">confirmation_number</span> Bookings
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl font-['Inter'] tracking-[-0.01em] text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-[#31353d]/20 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">analytics</span> Analytics
+            </a>
+</nav>
+<div class="mt-auto space-y-1">
+<button class="w-full mb-4 py-3 rounded-xl bg-primary text-on-primary font-bold text-sm Active: scale-95 transition-transform">
+                New Flight
+            </button>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl font-['Inter'] tracking-[-0.01em] text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-[#31353d]/20 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span> Settings
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl font-['Inter'] tracking-[-0.01em] text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-[#31353d]/20 transition-colors" href="#">
+<span class="material-symbols-outlined">help</span> Support
+            </a>
+</div>
+</aside>
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 w-[calc(100%-16rem)] h-16 z-40 bg-[#10131b]/80 backdrop-blur-xl border-b border-white/5 flex justify-between items-center px-8">
+<div class="flex items-center flex-1 max-w-2xl">
+<div class="w-full bg-surface-container-lowest rounded-full px-4 py-2 flex items-center gap-3 border border-white/5">
+<span class="material-symbols-outlined text-slate-500">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm text-on-surface w-full" placeholder="Search systems, flights, or passengers..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex gap-4">
+<button class="text-slate-400 hover:text-[#adc6ff] hover:bg-white/5 rounded-full p-2 transition-all relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full"></span>
+</button>
+<button class="text-slate-400 hover:text-[#adc6ff] hover:bg-white/5 rounded-full p-2 transition-all">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+</div>
+<div class="flex items-center gap-3 pl-4 border-l border-white/10">
+<div class="text-right">
+<p class="text-xs font-bold text-on-surface">Chief Controller</p>
+<p class="text-[10px] text-slate-500">Operational Node 01</p>
+</div>
+<img alt="Chief Controller Profile" class="w-10 h-10 rounded-full border border-primary/20" data-alt="portrait of a professional senior flight operation director in a dark uniform with cinematic low lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCW6S-227o7117zqC5EFZy3wlZO0-z2BqUFxCtrMhoGNV4MlgFnPyY5HJTgKKAXrbYJZ4PWS9ZqJryeCC5WxMxgrgqf4j8jPhuFO2QQyTgRG2IfcscRzYpZ6kWQeRVIRY2GxUWcPs1dOdu4k4KW_-cQwgPfnGcutgvFCsQa9xy9pFlaDLvmnVhZfaPn9CRnswsfzChCKtL7aqokV2U85ZCmtwf8LwpFOrRtdpoemu0GbjCPRvVnVEqVilkfYFsJB_27oo2bhMUN31Q"/>
+</div>
+</div>
+</header>
+<!-- Main Workspace -->
+<main class="ml-64 pt-16 h-screen flex flex-col bg-surface relative">
+<!-- Ambient Glow Decorations -->
+<div class="absolute top-1/4 right-0 w-96 h-96 bg-primary/5 blur-[120px] pointer-events-none"></div>
+<div class="absolute bottom-1/4 left-0 w-96 h-96 bg-primary-container/5 blur-[120px] pointer-events-none"></div>
+<!-- Chat Area -->
+<div class="flex-1 overflow-y-auto px-8 py-12 space-y-12">
+<!-- Intro State -->
+<div class="max-w-4xl mx-auto text-center mb-16">
+<span class="px-4 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold tracking-widest uppercase mb-4 inline-block">AI Command Node</span>
+<h2 class="text-4xl font-extrabold tracking-[-0.02em] mb-4 text-on-surface">Precision SQL Intelligence</h2>
+<p class="text-on-surface-variant max-w-xl mx-auto">Query the High-Altitude Command database using natural language. Your intent is automatically translated into optimized SQL logic.</p>
+</div>
+<!-- Chat History -->
+<div class="max-w-4xl mx-auto space-y-8">
+<!-- User Message -->
+<div class="flex justify-end items-start gap-4 group">
+<div class="bg-surface-container-high rounded-2xl rounded-tr-none px-6 py-4 max-w-lg shadow-sm border border-white/5">
+<p class="text-on-surface text-sm leading-relaxed tracking-[-0.01em]">Show all active flights from Delhi to Mumbai scheduled for today.</p>
+</div>
+<div class="w-8 h-8 rounded-lg bg-surface-container-highest flex items-center justify-center border border-white/5">
+<span class="material-symbols-outlined text-xs text-primary">person</span>
+</div>
+</div>
+<!-- AI Message -->
+<div class="flex justify-start items-start gap-4">
+<div class="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-xs text-on-primary-container" style="font-variation-settings: 'FILL' 1;">psychology</span>
+</div>
+<div class="flex-1 space-y-4">
+<div class="glass-panel rounded-2xl rounded-tl-none p-6 border border-white/5 shadow-2xl">
+<p class="text-primary text-xs font-bold uppercase tracking-widest mb-3">Generated SQL Query</p>
+<div class="bg-[#0a0e16] rounded-xl p-4 font-mono text-sm text-blue-300 border border-white/5 mb-6">
+<span class="text-purple-400">SELECT</span> flight_no, status, departure_time, gate <br/>
+<span class="text-purple-400">FROM</span> flights <br/>
+<span class="text-purple-400">WHERE</span> origin = <span class="text-emerald-400">'DEL'</span> <br/>
+<span class="text-purple-400">AND</span> destination = <span class="text-emerald-400">'BOM'</span> <br/>
+<span class="text-purple-400">AND</span> departure_date = <span class="text-emerald-400">CURRENT_DATE</span>;
+                            </div>
+<p class="text-on-surface text-sm mb-4">Found 3 matching active flights for your query.</p>
+<div class="overflow-hidden rounded-xl border border-white/5 bg-surface-container-lowest">
+<table class="w-full text-left text-xs">
+<thead>
+<tr class="bg-white/5">
+<th class="px-4 py-3 font-bold text-slate-500 uppercase tracking-wider">Flight</th>
+<th class="px-4 py-3 font-bold text-slate-500 uppercase tracking-wider">Status</th>
+<th class="px-4 py-3 font-bold text-slate-500 uppercase tracking-wider">Departure</th>
+<th class="px-4 py-3 font-bold text-slate-500 uppercase tracking-wider">Gate</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5">
+<tr>
+<td class="px-4 py-3 font-medium">IA-402</td>
+<td class="px-4 py-3">
+<span class="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-bold">ON-TIME</span>
+</td>
+<td class="px-4 py-3">14:20</td>
+<td class="px-4 py-3">G-24</td>
+</tr>
+<tr>
+<td class="px-4 py-3 font-medium">IA-918</td>
+<td class="px-4 py-3">
+<span class="px-2 py-0.5 rounded-full bg-error-container/40 text-error text-[10px] font-bold">DELAYED</span>
+</td>
+<td class="px-4 py-3">15:55</td>
+<td class="px-4 py-3">B-02</td>
+</tr>
+<tr>
+<td class="px-4 py-3 font-medium">IA-110</td>
+<td class="px-4 py-3">
+<span class="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-bold">ON-TIME</span>
+</td>
+<td class="px-4 py-3">18:10</td>
+<td class="px-4 py-3">F-11</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<!-- User Message 2 -->
+<div class="flex justify-end items-start gap-4 group">
+<div class="bg-surface-container-high rounded-2xl rounded-tr-none px-6 py-4 max-w-lg shadow-sm border border-white/5">
+<p class="text-on-surface text-sm leading-relaxed tracking-[-0.01em]">Which pilots have more than 500 flight hours this year?</p>
+</div>
+<div class="w-8 h-8 rounded-lg bg-surface-container-highest flex items-center justify-center border border-white/5">
+<span class="material-symbols-outlined text-xs text-primary">person</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Sticky Bottom Input Bar -->
+<div class="p-8 bg-gradient-to-t from-background via-background/90 to-transparent">
+<div class="max-w-4xl mx-auto relative group">
+<div class="absolute -inset-1 bg-primary/10 rounded-[2rem] blur opacity-0 group-focus-within:opacity-100 transition-opacity duration-500"></div>
+<div class="relative bg-surface-container-highest/60 backdrop-blur-3xl rounded-[1.5rem] border border-white/10 p-2 flex items-center shadow-2xl">
+<div class="px-4 text-slate-500">
+<span class="material-symbols-outlined">auto_awesome</span>
+</div>
+<input class="flex-1 bg-transparent border-none focus:ring-0 text-on-surface py-4 text-sm font-medium placeholder-slate-500" placeholder="Ask in English (e.g., show all passengers from the morning flight)" type="text"/>
+<div class="flex items-center gap-2 pr-2">
+<button class="p-2 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">mic</span>
+</button>
+<button class="bg-primary text-on-primary w-12 h-12 rounded-xl flex items-center justify-center hover:shadow-[0_0_20px_rgba(173,198,255,0.3)] transition-all Active:scale-95">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</div>
+</div>
+<div class="flex justify-center mt-4 gap-6">
+<button class="text-[10px] font-bold text-slate-500 uppercase tracking-widest hover:text-primary transition-colors flex items-center gap-2">
+<span class="w-1 h-1 rounded-full bg-slate-500"></span>
+                        Recent Queries
+                    </button>
+<button class="text-[10px] font-bold text-slate-500 uppercase tracking-widest hover:text-primary transition-colors flex items-center gap-2">
+<span class="w-1 h-1 rounded-full bg-slate-500"></span>
+                        Database Schema
+                    </button>
+<button class="text-[10px] font-bold text-slate-500 uppercase tracking-widest hover:text-primary transition-colors flex items-center gap-2">
+<span class="w-1 h-1 rounded-full bg-slate-500"></span>
+                        SQL Export
+                    </button>
+</div>
+</div>
+</div>
+</main>
+</body></html>

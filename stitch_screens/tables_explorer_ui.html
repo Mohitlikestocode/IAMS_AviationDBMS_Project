@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SQL Editor | IAMS Command</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-tint": "#adc6ff",
+                        "inverse-primary": "#005ac2",
+                        "on-tertiary-container": "#1a2b3e",
+                        "error-container": "#93000a",
+                        "error": "#ffb4ab",
+                        "surface-bright": "#363942",
+                        "surface": "#10131b",
+                        "surface-container-low": "#181c23",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-secondary-fixed": "#111c2d",
+                        "on-secondary": "#263143",
+                        "primary-container": "#4d8eff",
+                        "secondary-fixed": "#d8e3fb",
+                        "on-tertiary-fixed-variant": "#38485d",
+                        "on-surface": "#e0e2ed",
+                        "inverse-on-surface": "#2d3039",
+                        "on-tertiary-fixed": "#0b1c30",
+                        "surface-container-lowest": "#0a0e16",
+                        "surface-container-high": "#262a32",
+                        "surface-variant": "#31353d",
+                        "on-primary-container": "#00285d",
+                        "on-error": "#690005",
+                        "outline-variant": "#424754",
+                        "tertiary": "#b7c8e1",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-primary": "#002e6a",
+                        "tertiary-fixed-dim": "#b7c8e1",
+                        "primary": "#adc6ff",
+                        "surface-container": "#1c2027",
+                        "outline": "#8c909f",
+                        "inverse-surface": "#e0e2ed",
+                        "on-surface-variant": "#c2c6d6",
+                        "on-tertiary": "#213145",
+                        "secondary-fixed-dim": "#bcc7de",
+                        "background": "#10131b",
+                        "on-primary-fixed": "#001a42",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-highest": "#31353d",
+                        "secondary": "#bcc7de",
+                        "tertiary-fixed": "#d3e4fe",
+                        "on-background": "#e0e2ed",
+                        "surface-dim": "#10131b",
+                        "tertiary-container": "#8292aa",
+                        "on-secondary-fixed-variant": "#3c475a",
+                        "secondary-container": "#3e495d",
+                        "primary-fixed": "#d8e2ff",
+                        "on-secondary-container": "#aeb9d0"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #10131b;
+            color: #e0e2ed;
+            font-family: 'Inter', sans-serif;
+        }
+        .glow-primary:hover {
+            box-shadow: 0 0 20px rgba(173, 198, 255, 0.15);
+        }
+        /* Custom scrollbar for the dense table look */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0e16;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #31353d;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #424754;
+        }
+    </style>
+</head>
+<body class="overflow-hidden">
+<!-- SideNavBar Component -->
+<aside class="fixed left-0 top-0 h-full z-50 bg-[#0a0e16] border-r-0 h-screen w-64 flex flex-col font-['Inter'] tracking-[-0.01em] text-sm antialiased">
+<div class="p-6 flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">aq</span>
+</div>
+<div>
+<h1 class="text-lg font-bold tracking-[-0.02em] text-[#adc6ff]">High-Altitude</h1>
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant opacity-60">Command Center</p>
+</div>
+</div>
+<nav class="flex-1 px-3 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-[#c2c6d6] hover:text-[#e0e2ed] hover:bg-[#31353d]/20 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-[#c2c6d6] hover:text-[#e0e2ed] hover:bg-[#31353d]/20 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">map</span>
+<span>Fleet Map</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-[#c2c6d6] hover:text-[#e0e2ed] hover:bg-[#31353d]/20 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">flight_takeoff</span>
+<span>Flight Logs</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-[#adc6ff] font-bold border-r-2 border-[#adc6ff] bg-[#10131b] transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">terminal</span>
+<span>SQL Editor</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-[#c2c6d6] hover:text-[#e0e2ed] hover:bg-[#31353d]/20 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-[#c2c6d6] hover:text-[#e0e2ed] hover:bg-[#31353d]/20 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span>System Health</span>
+</a>
+</nav>
+<div class="p-4 mt-auto space-y-1 border-t border-surface-variant/20">
+<a class="flex items-center gap-3 px-4 py-2 text-xs text-on-surface-variant hover:text-on-surface" href="#">
+<span class="material-symbols-outlined text-sm">help</span>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-xs text-on-surface-variant hover:text-on-surface" href="#">
+<span class="material-symbols-outlined text-sm">description</span>
+<span>Documentation</span>
+</a>
+<button class="w-full mt-4 py-3 bg-primary text-on-primary rounded-xl font-bold active:scale-95 transition-transform">
+                Launch Mission
+            </button>
+</div>
+</aside>
+<!-- TopNavBar Component -->
+<header class="flex justify-between items-center w-full pl-72 pr-8 h-16 fixed top-0 z-40 bg-[#10131b]/60 backdrop-blur-3xl font-['Inter'] tracking-[-0.02em] text-sm shadow-[0_4px_20px_rgba(59,130,246,0.05)]">
+<div class="flex items-center gap-8">
+<div class="relative group">
+<span class="absolute inset-y-0 left-3 flex items-center text-on-surface-variant pointer-events-none">
+<span class="material-symbols-outlined text-lg">search</span>
+</span>
+<input class="bg-surface-container-lowest border-none rounded-full pl-10 pr-4 py-1.5 w-64 text-xs focus:ring-1 focus:ring-primary/50 placeholder:text-on-surface-variant/50" placeholder="Search tables or metadata..." type="text"/>
+</div>
+<nav class="flex gap-6">
+<a class="text-[#c2c6d6] hover:text-[#adc6ff] transition-colors" href="#">Operations</a>
+<a class="text-[#c2c6d6] hover:text-[#adc6ff] transition-colors" href="#">Analytics</a>
+<a class="text-[#c2c6d6] hover:text-[#adc6ff] transition-colors" href="#">Admin</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">dark_mode</span>
+</button>
+<div class="h-8 w-px bg-surface-variant/30 mx-2"></div>
+<button class="px-4 py-1.5 border border-outline-variant/30 text-[#c2c6d6] rounded-full text-xs hover:bg-surface-variant/20 transition-all">
+                Logs
+            </button>
+<button class="px-4 py-1.5 bg-primary text-on-primary rounded-full text-xs font-bold hover:glow-primary transition-all active:opacity-80">
+                Deploy Update
+            </button>
+<img class="w-8 h-8 rounded-full border border-primary/20 object-cover" data-alt="close-up portrait of a professional male flight controller in a dark uniform with a focused expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkrjDjbYBkkM7HOH8RRW-ONDdWFzqGc7UorSCNwJlU2XjK55yn6JkGGfNMGqbGHPs_pfnEJPIWy6SoPhrIYFvY-NFzAl3BzOfxSP3qaEj9BHE8cqocju785hw_aaOYrV2b6ksHZFvBsKTscn7p2-M-6DqH7sl2wMKK1VnjFCw_G3QmbWJC2Hkq8G2J73GJi3M83YM1pAvwxMjQKhVeNlc6AgPpEk8lQRMPPd9FX2b82g0yBefebv30NchdOTAAziRC03JhfmOf_Fc"/>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="ml-64 pt-16 h-screen flex overflow-hidden">
+<!-- Table List Sidebar (Inner) -->
+<aside class="w-72 bg-surface-container-low flex flex-col border-r border-surface-variant/10">
+<div class="p-6">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-xs font-black uppercase tracking-[0.1em] text-on-surface-variant">Database Tables</h2>
+<button class="p-1 hover:bg-surface-container-high rounded-lg text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">add_box</span>
+</button>
+</div>
+<div class="space-y-1">
+<button class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-surface-container-highest text-primary font-semibold text-xs transition-all">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-base">table_chart</span>
+<span>flight</span>
+</div>
+<span class="text-[10px] opacity-50 font-mono">24.1k</span>
+</button>
+<button class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-variant/20 text-xs transition-all">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-base">table_rows</span>
+<span>airline</span>
+</div>
+<span class="text-[10px] opacity-40 font-mono">152</span>
+</button>
+<button class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-variant/20 text-xs transition-all">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-base">table_rows</span>
+<span>aircraft</span>
+</div>
+<span class="text-[10px] opacity-40 font-mono">8.4k</span>
+</button>
+<button class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-variant/20 text-xs transition-all">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-base">table_rows</span>
+<span>airport</span>
+</div>
+<span class="text-[10px] opacity-40 font-mono">1.2k</span>
+</button>
+<button class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-variant/20 text-xs transition-all">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-base">table_rows</span>
+<span>passenger</span>
+</div>
+<span class="text-[10px] opacity-40 font-mono">1.1M</span>
+</button>
+<button class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-variant/20 text-xs transition-all">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-base">table_rows</span>
+<span>booking</span>
+</div>
+<span class="text-[10px] opacity-40 font-mono">4.5M</span>
+</button>
+</div>
+</div>
+<!-- SQL Inset Card -->
+<div class="mt-auto p-4 m-4 bg-surface-container-lowest rounded-xl border border-primary/5">
+<h3 class="text-[10px] font-bold text-primary mb-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">bolt</span>
+                    QUICK QUERY
+                </h3>
+<p class="text-[11px] text-on-surface-variant leading-relaxed mb-3">Run optimized aggregations on flight trajectories.</p>
+<button class="text-[10px] font-bold text-primary flex items-center gap-1 hover:underline">
+                    Open SQL Playground <span class="material-symbols-outlined text-xs">arrow_forward</span>
+</button>
+</div>
+</aside>
+<!-- Data Grid Explorer -->
+<section class="flex-1 flex flex-col bg-surface relative">
+<!-- Table Header -->
+<div class="px-8 py-6 flex items-end justify-between">
+<div>
+<div class="flex items-center gap-2 text-on-surface-variant mb-1">
+<span class="text-[10px] font-mono tracking-tighter opacity-50">public / tables /</span>
+<h2 class="text-2xl font-black text-on-surface tracking-[-0.03em]">flight</h2>
+</div>
+<p class="text-xs text-on-surface-variant">Real-time transponder data and flight schedules across global sectors.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-container-high text-on-surface rounded-lg text-xs font-semibold hover:bg-surface-variant transition-colors border border-outline-variant/10">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+                        Filter
+                    </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-container-high text-on-surface rounded-lg text-xs font-semibold hover:bg-surface-variant transition-colors border border-outline-variant/10">
+<span class="material-symbols-outlined text-sm">import_export</span>
+                        Export
+                    </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-lg text-xs font-bold hover:glow-primary transition-all">
+<span class="material-symbols-outlined text-sm">add</span>
+                        Add new row
+                    </button>
+</div>
+</div>
+<!-- Table Container -->
+<div class="flex-1 px-8 pb-8 overflow-hidden">
+<div class="h-full bg-surface-container-low rounded-xl flex flex-col overflow-hidden border border-outline-variant/5">
+<!-- Column Headers -->
+<div class="flex bg-surface-container-high/50 border-b border-surface-variant/20 sticky top-0 z-10 overflow-x-auto">
+<div class="w-12 shrink-0 border-r border-surface-variant/20 flex items-center justify-center">
+<input class="rounded border-outline-variant bg-surface-container-lowest text-primary focus:ring-primary ring-offset-surface" type="checkbox"/>
+</div>
+<div class="flex-1 min-w-[120px] px-4 py-3 border-r border-surface-variant/20 flex flex-col gap-0.5">
+<span class="text-[10px] font-bold uppercase tracking-wider text-primary">id</span>
+<span class="text-[9px] font-mono text-on-surface-variant/60">UUID</span>
+</div>
+<div class="flex-1 min-w-[150px] px-4 py-3 border-r border-surface-variant/20 flex flex-col gap-0.5">
+<span class="text-[10px] font-bold uppercase tracking-wider text-on-surface">callsign</span>
+<span class="text-[9px] font-mono text-on-surface-variant/60">VARCHAR(8)</span>
+</div>
+<div class="flex-1 min-w-[180px] px-4 py-3 border-r border-surface-variant/20 flex flex-col gap-0.5">
+<span class="text-[10px] font-bold uppercase tracking-wider text-on-surface">origin_icao</span>
+<span class="text-[9px] font-mono text-on-surface-variant/60">CHAR(4)</span>
+</div>
+<div class="flex-1 min-w-[180px] px-4 py-3 border-r border-surface-variant/20 flex flex-col gap-0.5">
+<span class="text-[10px] font-bold uppercase tracking-wider text-on-surface">destination_icao</span>
+<span class="text-[9px] font-mono text-on-surface-variant/60">CHAR(4)</span>
+</div>
+<div class="flex-1 min-w-[140px] px-4 py-3 border-r border-surface-variant/20 flex flex-col gap-0.5">
+<span class="text-[10px] font-bold uppercase tracking-wider text-on-surface">altitude_ft</span>
+<span class="text-[9px] font-mono text-on-surface-variant/60">INTEGER</span>
+</div>
+<div class="flex-1 min-w-[120px] px-4 py-3 border-r border-surface-variant/20 flex flex-col gap-0.5">
+<span class="text-[10px] font-bold uppercase tracking-wider text-on-surface">status</span>
+<span class="text-[9px] font-mono text-on-surface-variant/60">ENUM</span>
+</div>
+<div class="w-32 shrink-0 px-4 py-3 flex flex-col gap-0.5">
+<span class="text-[10px] font-bold uppercase tracking-wider text-on-surface">actions</span>
+<span class="text-[9px] font-mono text-on-surface-variant/60">OPERATIONS</span>
+</div>
+</div>
+<!-- Table Body -->
+<div class="flex-1 overflow-y-auto">
+<!-- Row 1 -->
+<div class="flex border-b border-surface-variant/10 hover:bg-surface-container-high/30 transition-colors group">
+<div class="w-12 shrink-0 border-r border-surface-variant/10 flex items-center justify-center">
+<input class="rounded border-outline-variant bg-surface-container-lowest text-primary focus:ring-primary ring-offset-surface" type="checkbox"/>
+</div>
+<div class="flex-1 min-w-[120px] px-4 py-3 border-r border-surface-variant/10 text-[11px] font-mono text-on-surface-variant flex items-center">
+                                4f2a...91b0
+                            </div>
+<div class="flex-1 min-w-[150px] px-4 py-3 border-r border-surface-variant/10 text-[11px] text-on-surface font-semibold flex items-center">
+                                DLH452
+                            </div>
+<div class="flex-1 min-w-[180px] px-4 py-3 border-r border-surface-variant/10 text-[11px] text-on-surface-variant flex items-center">
+                                EDDF
+                            </div>
+<div class="flex-1 min-w-[180px] px-4 py-3 border-r border-surface-variant/10 text-[11px] text-on-surface-variant flex items-center">
+                                KJFK
+                            </div>
+<div class="flex-1 min-w-[140px] px-4 py-3 border-r border-surface-variant/10 text-[11px] text-on-surface-variant font-mono flex items-center">
+                                36,000
+                            </div>
+<div class="flex-1 min-w-[120px] px-4 py-3 border-r border-surface-variant/10 flex items-center">
+<span class="px-2 py-0.5 rounded-full bg-primary-container/20 text-primary text-[9px] font-bold uppercase tracking-wider">In-Air</span>
+</div>
+<div class="w-32 shrink-0 px-4 py-3 flex items-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-lg">edit</span></button>
+<button class="text-on-surface-variant hover:text-error"><span class="material-symbols-outlined text-lg">delete</span></button>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="flex border-b border-surface-variant/10 hover:bg-surface-container-high/30 transition-colors group">
+<div class="w-12 shrink-0 border-r border-surface-variant/10 flex items-center justify-center">
+<input class="rounded border-outline-variant bg-surface-container-lowest text-primary focus:ring-primary ring-offset-surface" type="checkbox"/>
+</div>
+<div class="flex-1 min-w-[120px] px-4 py-3 border-r border-surface-variant/10 text-[11px] font-mono text-on-surface-variant flex items-center">
+                                8e1c...22dd
+                            </div>
+<div class="flex-1 min-w-[150px] px-4 py-3 border-r border-surface-variant/10 text-[11px] text-on-surface font-semibold flex items-center">
+                                BAW001
+                            </div>
+<div class="flex-1 min-w-[180px] px-4 py-3 border-r border-surface-variant/10 text-[11px] text-on-surface-variant flex items-center">
+                                EGLL
+                            </div>
+<div class="flex-1 min-w-[180px] px-4 py-3 border-r border-surface-variant/10 text-[11px] text-on-surface-variant flex items-center">
+                                LFPG
+                            </div>
+<div class="flex-1 min-w-[140px] px-4 py-3 border-r border-surface-variant/10 text-[11px] text-on-surface-variant font-mono flex items-center">
+                                0
+                            </div>
+<div class="flex-1 min-w-[120px] px-4 py-3 border-r border-surface-variant/10 flex items-center">
+<span class="px-2 py-0.5 rounded-full bg-surface-variant text-on-surface-variant text-[9px] font-bold uppercase tracking-wider">Grounded</span>
+</div>
+<div class="w-32 shrink-0 px-4 py-3 flex items-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-lg">edit</span></button>
+<button class="text-on-surface-variant hover:text-error"><span class="material-symbols-outlined text-lg">delete</span></button>
+</div>
+</div>
+<!-- Row 3 -->
+<div class="flex border-b border-surface-variant/10 hover:bg-surface-container-high/30 transition-colors group">
+<div class="w-12 shrink-0 border-r border-surface-variant/10 flex items-center justify-center">
+<input class="rounded border-outline-variant bg-surface-container-lowest text-primary focus:ring-primary ring-offset-surface" type="checkbox"/>
+</div>
+<div class="flex-1 min-w-[120px] px-4 py-3 border-r border-surface-variant/10 text-[11px] font-mono text-on-surface-variant flex items-center">
+                                1a45...78ff
+                            </div>
+<div class="flex-1 min-w-[150px] px-4 py-3 border-r border-surface-variant/10 text-[11px] text-on-surface font-semibold flex items-center">
+                                UAE017
+                            </div>
+<div class="flex-1 min-w-[180px] px-4 py-3 border-r border-surface-variant/10 text-[11px] text-on-surface-variant flex items-center">
+                                OMDB
+                            </div>
+<div class="flex-1 min-w-[180px] px-4 py-3 border-r border-surface-variant/10 text-[11px] text-on-surface-variant flex items-center">
+                                EGLL
+                            </div>
+<div class="flex-1 min-w-[140px] px-4 py-3 border-r border-surface-variant/10 text-[11px] text-on-surface-variant font-mono flex items-center">
+                                41,000
+                            </div>
+<div class="flex-1 min-w-[120px] px-4 py-3 border-r border-surface-variant/10 flex items-center">
+<span class="px-2 py-0.5 rounded-full bg-error-container/20 text-error text-[9px] font-bold uppercase tracking-wider">Emergency</span>
+</div>
+<div class="w-32 shrink-0 px-4 py-3 flex items-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-lg">edit</span></button>
+<button class="text-on-surface-variant hover:text-error"><span class="material-symbols-outlined text-lg">delete</span></button>
+</div>
+</div>
+<!-- Row 4 -->
+<div class="flex border-b border-surface-variant/10 hover:bg-surface-container-high/30 transition-colors group">
+<div class="w-12 shrink-0 border-r border-surface-variant/10 flex items-center justify-center">
+<input class="rounded border-outline-variant bg-surface-container-lowest text-primary focus:ring-primary ring-offset-surface" type="checkbox"/>
+</div>
+<div class="flex-1 min-w-[120px] px-4 py-3 border-r border-surface-variant/10 text-[11px] font-mono text-on-surface-variant flex items-center">
+                                cd45...3301
+                            </div>
+<div class="flex-1 min-w-[150px] px-4 py-3 border-r border-surface-variant/10 text-[11px] text-on-surface font-semibold flex items-center">
+                                AFR002
+                            </div>
+<div class="flex-1 min-w-[180px] px-4 py-3 border-r border-surface-variant/10 text-[11px] text-on-surface-variant flex items-center">
+                                LFPG
+                            </div>
+<div class="flex-1 min-w-[180px] px-4 py-3 border-r border-surface-variant/10 text-[11px] text-on-surface-variant flex items-center">
+                                KATL
+                            </div>
+<div class="flex-1 min-w-[140px] px-4 py-3 border-r border-surface-variant/10 text-[11px] text-on-surface-variant font-mono flex items-center">
+                                34,500
+                            </div>
+<div class="flex-1 min-w-[120px] px-4 py-3 border-r border-surface-variant/10 flex items-center">
+<span class="px-2 py-0.5 rounded-full bg-primary-container/20 text-primary text-[9px] font-bold uppercase tracking-wider">In-Air</span>
+</div>
+<div class="w-32 shrink-0 px-4 py-3 flex items-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-lg">edit</span></button>
+<button class="text-on-surface-variant hover:text-error"><span class="material-symbols-outlined text-lg">delete</span></button>
+</div>
+</div>
+</div>
+<!-- Pagination -->
+<div class="bg-surface-container-high/50 border-t border-surface-variant/20 px-6 py-4 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<span class="text-xs text-on-surface-variant">Showing <span class="text-on-surface font-bold">1-25</span> of 24,103 rows</span>
+<div class="flex items-center gap-2 px-2 py-1 bg-surface-container-lowest rounded-lg border border-outline-variant/10">
+<span class="text-[10px] text-on-surface-variant uppercase font-bold tracking-tighter">Rows per page:</span>
+<select class="bg-transparent border-none text-[10px] p-0 focus:ring-0 text-primary font-bold">
+<option>25</option>
+<option>50</option>
+<option>100</option>
+</select>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-1.5 rounded-lg bg-surface-container-highest text-on-surface-variant hover:text-primary disabled:opacity-30 disabled:pointer-events-none" disabled="">
+<span class="material-symbols-outlined">first_page</span>
+</button>
+<button class="p-1.5 rounded-lg bg-surface-container-highest text-on-surface-variant hover:text-primary disabled:opacity-30 disabled:pointer-events-none" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<div class="flex items-center gap-1 px-3">
+<span class="text-xs font-bold text-primary">1</span>
+<span class="text-xs text-on-surface-variant">/</span>
+<span class="text-xs text-on-surface-variant">965</span>
+</div>
+<button class="p-1.5 rounded-lg bg-surface-container-highest text-on-surface-variant hover:text-primary">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+<button class="p-1.5 rounded-lg bg-surface-container-highest text-on-surface-variant hover:text-primary">
+<span class="material-symbols-outlined">last_page</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Floating Status Bar (Kinetic Effect) -->
+<div class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-surface-container-highest/80 backdrop-blur-xl border border-primary/20 px-6 py-3 rounded-full flex items-center gap-8 shadow-2xl">
+<div class="flex items-center gap-2">
+<div class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></div>
+<span class="text-[10px] font-bold tracking-wider uppercase text-on-surface">Connected: primary-db-west</span>
+</div>
+<div class="h-4 w-px bg-surface-variant/30"></div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-xs text-on-surface-variant">speed</span>
+<span class="text-[10px] font-bold tracking-wider uppercase text-on-surface-variant">Latency: 12ms</span>
+</div>
+<div class="h-4 w-px bg-surface-variant/30"></div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-xs text-on-surface-variant">data_object</span>
+<span class="text-[10px] font-bold tracking-wider uppercase text-on-surface-variant">Schema: HighAltitude_v4</span>
+</div>
+</div>
+</section>
+</main>
+</body></html>

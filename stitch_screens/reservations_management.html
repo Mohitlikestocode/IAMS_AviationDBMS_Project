@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>IAMS Command Center | Bookings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#0a0e16",
+                        "on-background": "#e0e2ed",
+                        "surface-container-low": "#181c23",
+                        "primary-fixed": "#d8e2ff",
+                        "on-error": "#690005",
+                        "background": "#10131b",
+                        "surface-bright": "#363942",
+                        "outline": "#8c909f",
+                        "on-tertiary": "#213145",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-secondary-container": "#aeb9d0",
+                        "error-container": "#93000a",
+                        "secondary": "#bcc7de",
+                        "on-primary-container": "#00285d",
+                        "secondary-container": "#3e495d",
+                        "surface-dim": "#10131b",
+                        "secondary-fixed-dim": "#bcc7de",
+                        "on-tertiary-fixed": "#0b1c30",
+                        "inverse-on-surface": "#2d3039",
+                        "tertiary-container": "#8292aa",
+                        "on-tertiary-container": "#1a2b3e",
+                        "surface-tint": "#adc6ff",
+                        "surface-container-high": "#262a32",
+                        "on-secondary-fixed-variant": "#3c475a",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-secondary": "#263143",
+                        "tertiary": "#b7c8e1",
+                        "surface-container-highest": "#31353d",
+                        "on-primary": "#002e6a",
+                        "inverse-surface": "#e0e2ed",
+                        "secondary-fixed": "#d8e3fb",
+                        "outline-variant": "#424754",
+                        "on-primary-fixed": "#001a42",
+                        "on-tertiary-fixed-variant": "#38485d",
+                        "surface-container": "#1c2027",
+                        "on-surface": "#e0e2ed",
+                        "on-secondary-fixed": "#111c2d",
+                        "surface": "#10131b",
+                        "inverse-primary": "#005ac2",
+                        "primary-container": "#4d8eff",
+                        "on-surface-variant": "#c2c6d6",
+                        "tertiary-fixed": "#d3e4fe",
+                        "tertiary-fixed-dim": "#b7c8e1",
+                        "surface-variant": "#31353d",
+                        "on-error-container": "#ffdad6",
+                        "error": "#ffb4ab",
+                        "primary": "#adc6ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hud-gradient {
+            background: linear-gradient(135deg, rgba(173, 198, 255, 0.05) 0%, rgba(16, 19, 27, 0) 100%);
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0e16; }
+        ::-webkit-scrollbar-thumb { background: #31353d; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background text-on-background selection:bg-primary selection:text-on-primary">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 flex flex-col bg-[#0a0e16] shadow-[1px_0_0_0_rgba(255,255,255,0.05)] z-50">
+<div class="flex flex-col h-full py-6 px-4 gap-2">
+<!-- Brand Header -->
+<div class="flex items-center gap-3 px-2 mb-8">
+<div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container" style="font-variation-settings: 'FILL' 1;">flight_takeoff</span>
+</div>
+<div>
+<div class="text-xl font-bold tracking-tighter text-[#adc6ff]">IAMS</div>
+<div class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Command Center</div>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-[#31353d]/20 transition-colors duration-200 font-['Inter'] tracking-[-0.01em] text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-lg">dashboard</span> Dashboard
+                </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-[#31353d]/20 transition-colors duration-200 font-['Inter'] tracking-[-0.01em] text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-lg">table_chart</span> Tables
+                </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-[#31353d]/20 transition-colors duration-200 font-['Inter'] tracking-[-0.01em] text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-lg">terminal</span> SQL Console
+                </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-[#31353d]/20 transition-colors duration-200 font-['Inter'] tracking-[-0.01em] text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-lg">psychology</span> AI Query
+                </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-[#31353d]/20 transition-colors duration-200 font-['Inter'] tracking-[-0.01em] text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-lg">flight_takeoff</span> Flights
+                </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-[#31353d]/20 transition-colors duration-200 font-['Inter'] tracking-[-0.01em] text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-lg">group</span> Passengers
+                </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#adc6ff] bg-[#31353d]/30 border-r-2 border-[#adc6ff] transition-colors duration-200 font-['Inter'] tracking-[-0.01em] text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">confirmation_number</span> Bookings
+                </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-[#31353d]/20 transition-colors duration-200 font-['Inter'] tracking-[-0.01em] text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-lg">analytics</span> Analytics
+                </a>
+</nav>
+<!-- Footer Nav -->
+<div class="mt-auto pt-6 border-t border-white/5 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-[#31353d]/20 transition-colors duration-200 font-['Inter'] tracking-[-0.01em] text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-lg">settings</span> Settings
+                </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-[#31353d]/20 transition-colors duration-200 font-['Inter'] tracking-[-0.01em] text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-lg">help</span> Support
+                </a>
+</div>
+</div>
+</aside>
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 w-[calc(100%-16rem)] h-16 z-40 bg-[#10131b]/80 backdrop-blur-xl border-b border-white/5">
+<div class="flex justify-between items-center px-8 w-full h-full">
+<!-- Search on Left -->
+<div class="relative w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">search</span>
+<input class="w-full bg-surface-container-lowest border-none rounded-full py-2 pl-10 pr-4 text-sm text-on-surface focus:ring-1 focus:ring-primary/30 transition-all placeholder:text-slate-500" placeholder="Global system search..." type="text"/>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-4">
+<button class="hover:text-[#adc6ff] hover:bg-white/5 rounded-full p-2 transition-all relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full"></span>
+</button>
+<button class="hover:text-[#adc6ff] hover:bg-white/5 rounded-full p-2 transition-all">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<div class="h-8 w-px bg-white/10 mx-2"></div>
+<div class="flex items-center gap-3 cursor-pointer group">
+<div class="text-right">
+<p class="text-xs font-bold tracking-tight text-on-surface">Chief Controller</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-tighter">Sector 7-G</p>
+</div>
+<img alt="Chief Controller Profile" class="w-10 h-10 rounded-full border border-primary/20 group-hover:border-primary/50 transition-all" data-alt="professional portrait of a confident male airline executive in a dark navy suit with sharp features and thoughtful expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgHbQq7WooaD1_Vqw93NjdUy9Em7PyH7dxAl5puYUsD4O8ZyWPkeIK6heEE8VBUn-9WbQw-pC5l9_uo4ApvzfdgjVsgnFW2IFb3ijNIh1Qag0uINgTAcKDW6B58BOG34g1CIRYwVmtz7lYf5axoEHl8hpyhxqtLeUq5shlOAUZMSb9oQme4zRw80XfVDDUH_DnSCRzrb6iJ6oBZJhIT7cgCIeDd2r_45syro1UQya5CYKSKtqN1UsD8Rqh1HkrznnAOK5D9JHp1p8"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="ml-64 pt-24 px-12 pb-12 min-h-screen">
+<!-- Header Section -->
+<section class="mb-12 flex justify-between items-end">
+<div>
+<h1 class="text-4xl font-extrabold tracking-[-0.04em] text-on-background mb-2">Bookings</h1>
+<p class="text-on-surface-variant text-sm font-medium tracking-[-0.01em]">System-wide reservation management and transactional oversight.</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex bg-surface-container-low p-1 rounded-xl">
+<button class="px-4 py-1.5 text-xs font-bold rounded-lg bg-surface-container-highest text-primary transition-all">All Bookings</button>
+<button class="px-4 py-1.5 text-xs font-bold rounded-lg text-slate-400 hover:text-on-surface transition-all">Pending</button>
+<button class="px-4 py-1.5 text-xs font-bold rounded-lg text-slate-400 hover:text-on-surface transition-all">Confirmed</button>
+</div>
+<button class="bg-primary text-on-primary-container px-6 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all shadow-[0_0_20px_rgba(173,198,255,0.15)]">
+<span class="material-symbols-outlined text-lg">add</span>
+                    New Flight
+                </button>
+</div>
+</section>
+<!-- Metrics Overview (Kinetic Cluster) -->
+<div class="grid grid-cols-4 gap-6 mb-12">
+<div class="bg-surface-container-low p-6 rounded-xl relative overflow-hidden group">
+<div class="absolute inset-0 hud-gradient opacity-50"></div>
+<div class="relative z-10">
+<p class="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold mb-1">Total Volume</p>
+<h3 class="text-3xl font-extrabold tracking-tighter text-[#adc6ff]">12,842</h3>
+<div class="mt-4 flex items-center gap-2 text-[10px] font-bold text-primary-container">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+                        +14.2% FROM LAST LOG
+                    </div>
+</div>
+<span class="material-symbols-outlined absolute -bottom-2 -right-2 text-7xl text-white/5 font-thin">receipt_long</span>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl relative overflow-hidden">
+<div class="relative z-10">
+<p class="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold mb-1">Active Pending</p>
+<h3 class="text-3xl font-extrabold tracking-tighter text-tertiary">428</h3>
+<div class="mt-4 flex items-center gap-2 text-[10px] font-bold text-tertiary-container">
+<span class="material-symbols-outlined text-sm">history</span>
+                        98.2% PROCESS RATE
+                    </div>
+</div>
+<span class="material-symbols-outlined absolute -bottom-2 -right-2 text-7xl text-white/5 font-thin">hourglass_empty</span>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl relative overflow-hidden">
+<div class="relative z-10">
+<p class="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold mb-1">System Capacity</p>
+<h3 class="text-3xl font-extrabold tracking-tighter text-on-surface">94.1%</h3>
+<div class="mt-4 w-full h-1 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 94%"></div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl relative overflow-hidden">
+<div class="relative z-10">
+<p class="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold mb-1">Cancellations</p>
+<h3 class="text-3xl font-extrabold tracking-tighter text-error">1.2%</h3>
+<div class="mt-4 flex items-center gap-2 text-[10px] font-bold text-error">
+<span class="material-symbols-outlined text-sm">warning</span>
+                        BELOW THRESHOLD
+                    </div>
+</div>
+</div>
+</div>
+<!-- High-Density Bookings Table -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden border border-white/5">
+<div class="p-6 border-b border-white/5 flex justify-between items-center bg-[#181c23]/40">
+<h2 class="text-xs uppercase tracking-[0.25em] font-bold text-slate-400">Live Transaction Stream</h2>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 text-[10px] font-bold text-slate-500">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+                        SYNCING LIVE
+                    </div>
+<button class="text-xs text-primary font-bold flex items-center gap-1 hover:underline">
+<span class="material-symbols-outlined text-sm">download</span>
+                        Export Manifest
+                    </button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low">
+<th class="px-8 py-4 text-[10px] uppercase tracking-widest text-slate-500 font-extrabold">Booking ID</th>
+<th class="px-6 py-4 text-[10px] uppercase tracking-widest text-slate-500 font-extrabold">Passenger Name</th>
+<th class="px-6 py-4 text-[10px] uppercase tracking-widest text-slate-500 font-extrabold">Flight Number</th>
+<th class="px-6 py-4 text-[10px] uppercase tracking-widest text-slate-500 font-extrabold">Status</th>
+<th class="px-6 py-4 text-[10px] uppercase tracking-widest text-slate-500 font-extrabold text-right">Total Amount</th>
+<th class="px-8 py-4 text-[10px] uppercase tracking-widest text-slate-500 font-extrabold text-center">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-high transition-all group">
+<td class="px-8 py-5">
+<span class="font-mono text-xs text-primary tracking-tighter font-bold">#BK-90210</span>
+</td>
+<td class="px-6 py-5">
+<a class="text-sm font-bold text-on-surface hover:text-primary hover:underline decoration-primary/30 transition-all" href="#">Marcus Sterling</a>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-slate-500">flight</span>
+<span class="text-xs font-bold text-on-surface-variant">HA-442</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-primary-container/20 text-primary border border-primary/20">
+                                    Confirmed
+                                </span>
+</td>
+<td class="px-6 py-5 text-right">
+<span class="text-sm font-bold text-on-surface">$2,440.00</span>
+</td>
+<td class="px-8 py-5 text-center">
+<button class="text-xs font-bold text-error bg-error-container/10 px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-error-container/20">
+                                    Cancel Booking
+                                </button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-high transition-all group">
+<td class="px-8 py-5">
+<span class="font-mono text-xs text-primary tracking-tighter font-bold">#BK-88432</span>
+</td>
+<td class="px-6 py-5">
+<a class="text-sm font-bold text-on-surface hover:text-primary hover:underline decoration-primary/30 transition-all" href="#">Elena Rodriquez</a>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-slate-500">flight</span>
+<span class="text-xs font-bold text-on-surface-variant">HA-109</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-tertiary-container/20 text-tertiary border border-tertiary/20">
+                                    Pending
+                                </span>
+</td>
+<td class="px-6 py-5 text-right">
+<span class="text-sm font-bold text-on-surface">$1,120.00</span>
+</td>
+<td class="px-8 py-5 text-center">
+<button class="text-xs font-bold text-error bg-error-container/10 px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-error-container/20">
+                                    Cancel Booking
+                                </button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-high transition-all group">
+<td class="px-8 py-5">
+<span class="font-mono text-xs text-primary tracking-tighter font-bold">#BK-77512</span>
+</td>
+<td class="px-6 py-5">
+<a class="text-sm font-bold text-on-surface hover:text-primary hover:underline decoration-primary/30 transition-all" href="#">Dr. Julian Thorne</a>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-slate-500">flight</span>
+<span class="text-xs font-bold text-on-surface-variant">HA-221</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-error-container/20 text-error border border-error/20">
+                                    Cancelled
+                                </span>
+</td>
+<td class="px-6 py-5 text-right">
+<span class="text-sm font-bold text-on-surface-variant line-through">$4,890.00</span>
+</td>
+<td class="px-8 py-5 text-center">
+<button class="text-xs font-bold text-slate-500 bg-white/5 px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 cursor-not-allowed">
+                                    Archived
+                                </button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-high transition-all group">
+<td class="px-8 py-5">
+<span class="font-mono text-xs text-primary tracking-tighter font-bold">#BK-66129</span>
+</td>
+<td class="px-6 py-5">
+<a class="text-sm font-bold text-on-surface hover:text-primary hover:underline decoration-primary/30 transition-all" href="#">Sarah Jenkins-Wei</a>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-slate-500">flight</span>
+<span class="text-xs font-bold text-on-surface-variant">HA-901</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-primary-container/20 text-primary border border-primary/20">
+                                    Confirmed
+                                </span>
+</td>
+<td class="px-6 py-5 text-right">
+<span class="text-sm font-bold text-on-surface">$850.00</span>
+</td>
+<td class="px-8 py-5 text-center">
+<button class="text-xs font-bold text-error bg-error-container/10 px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-error-container/20">
+                                    Cancel Booking
+                                </button>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surface-container-high transition-all group">
+<td class="px-8 py-5">
+<span class="font-mono text-xs text-primary tracking-tighter font-bold">#BK-55214</span>
+</td>
+<td class="px-6 py-5">
+<a class="text-sm font-bold text-on-surface hover:text-primary hover:underline decoration-primary/30 transition-all" href="#">Akira Yamamoto</a>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-slate-500">flight</span>
+<span class="text-xs font-bold text-on-surface-variant">HA-004</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-primary-container/20 text-primary border border-primary/20">
+                                    Confirmed
+                                </span>
+</td>
+<td class="px-6 py-5 text-right">
+<span class="text-sm font-bold text-on-surface">$12,400.00</span>
+</td>
+<td class="px-8 py-5 text-center">
+<button class="text-xs font-bold text-error bg-error-container/10 px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-error-container/20">
+                                    Cancel Booking
+                                </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination / Footer -->
+<div class="px-8 py-6 bg-surface-container-low/30 border-t border-white/5 flex items-center justify-between">
+<p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Showing 5 of 12,842 reservations</p>
+<div class="flex gap-2">
+<button class="w-8 h-8 rounded-lg flex items-center justify-center bg-surface-container-highest text-slate-400 hover:text-on-surface transition-all">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center bg-primary text-on-primary-container text-xs font-bold">1</button>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center bg-surface-container-highest text-slate-400 hover:text-on-surface transition-all text-xs font-bold">2</button>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center bg-surface-container-highest text-slate-400 hover:text-on-surface transition-all text-xs font-bold">3</button>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center bg-surface-container-highest text-slate-400 hover:text-on-surface transition-all">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- System Activity HUD (Sidebar-style component on bottom right) -->
+<div class="mt-12 flex gap-8">
+<div class="w-1/3 bg-surface-container-low p-6 rounded-xl border border-white/5">
+<h4 class="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold mb-6">Regional Distribution</h4>
+<div class="space-y-4">
+<div>
+<div class="flex justify-between text-[10px] font-bold mb-1">
+<span>NORTH AMERICA</span>
+<span class="text-primary">42%</span>
+</div>
+<div class="w-full h-1 bg-surface-container-highest rounded-full">
+<div class="h-full bg-primary" style="width: 42%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-[10px] font-bold mb-1">
+<span>EMEA</span>
+<span class="text-tertiary">31%</span>
+</div>
+<div class="w-full h-1 bg-surface-container-highest rounded-full">
+<div class="h-full bg-tertiary" style="width: 31%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-[10px] font-bold mb-1">
+<span>APAC</span>
+<span class="text-on-surface-variant">27%</span>
+</div>
+<div class="w-full h-1 bg-surface-container-highest rounded-full">
+<div class="h-full bg-on-surface-variant" style="width: 27%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Kinetic Visual Card -->
+<div class="flex-grow bg-surface-container-low rounded-xl relative overflow-hidden group border border-white/5">
+<img alt="Airline Dashboard Visualization" class="absolute inset-0 w-full h-full object-cover opacity-20 transition-transform duration-700 group-hover:scale-105" data-alt="minimalist night view of a modern airplane wing against a deep blue stratospheric sky with glowing cockpit instrument reflections" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_2wb_pC9C0n56cSJpHYvkehEqLsg0t4hWAldyslX3P0KkUl1nvxhgKoNU-EhzRs9vs6BVXXWSAxRmEIhhC9Obj-NTF-q8p5WHNpeSETItEZdd7-fwmp1I5Ozj7Pe-lDNIC64bEo5XXpBmrKP8W4vqX27yUC-jqNv_CCEC_WsEfrkrAiZtMiH7sYBx1ZcFC7Oq2ZycT04cxbA-WfF01gpTxampJPjOLlOcZiwtZKNQaWtzJWE8jbpBowvt1KFFf1NTcjbbxEQ8Oec"/>
+<div class="relative z-10 p-8 flex flex-col h-full justify-between">
+<div>
+<span class="px-3 py-1 bg-primary/20 text-primary text-[10px] font-bold rounded-full uppercase tracking-widest border border-primary/20">Operational Insight</span>
+<h3 class="text-2xl font-bold mt-4 tracking-tighter max-w-sm">Strategic route optimization detected 12% potential revenue lift in Sector 4.</h3>
+</div>
+<button class="text-xs font-bold flex items-center gap-2 text-primary hover:gap-3 transition-all">
+                        View Analysis Matrix
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-80"></div>
+</div>
+</div>
+</main>
+</body></html>
