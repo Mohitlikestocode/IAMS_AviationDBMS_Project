@@ -19,6 +19,10 @@ const AiQuery = () => {
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef(null);
 
+  const [isRecording, setIsRecording] = useState(false);
+  const mediaRecorder = useRef(null);
+  const audioChunks = useRef([]);
+
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -44,6 +48,58 @@ const AiQuery = () => {
       setMessages(prev => [...prev, { role: 'ai', data }]);
     } catch (err) {
       setMessages(prev => [...prev, { role: 'ai', error: 'Failed to connect to AI Core.' }]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder.current = new MediaRecorder(stream);
+      mediaRecorder.current.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunks.current.push(e.data);
+      };
+      mediaRecorder.current.onstop = sendAudioData;
+      audioChunks.current = [];
+      mediaRecorder.current.start();
+      setIsRecording(true);
+    } catch (err) {
+      alert('Microphone access is required for Voice Intelligence.');
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorder.current && isRecording) {
+      mediaRecorder.current.stop();
+      setIsRecording(false);
+      // Stop all tracks to clean up hardware light
+      mediaRecorder.current.stream.getTracks().forEach(track => track.stop());
+    }
+  };
+
+  const sendAudioData = async () => {
+    if (audioChunks.current.length === 0) return;
+    const blob = new Blob(audioChunks.current, { type: 'audio/webm' });
+    const formData = new FormData();
+    formData.append('audio', blob, 'voice.webm');
+
+    setLoading(true);
+    const tempId = Date.now();
+    setMessages(prev => [...prev, { id: tempId, role: 'user', content: '🎙️ Synthesizing Voice Command...' }]);
+
+    try {
+      const response = await fetch('http://localhost:5000/api/voice-query', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await response.json();
+      setMessages(prev => {
+        const replaceUser = prev.map(m => m.id === tempId ? { role: 'user', content: `🎙️ "${data.transcript}"` } : m);
+        return [...replaceUser, { role: 'ai', data }];
+      });
+    } catch (err) {
+      setMessages(prev => [...prev, { role: 'ai', error: 'Groq Voice Protocol connection failed.' }]);
     } finally {
       setLoading(false);
     }
@@ -158,8 +214,12 @@ const AiQuery = () => {
                 onKeyDown={(e) => e.key === 'Enter' && handleSend(input)}
               />
               <div className="flex items-center gap-2 pr-2">
-                <button className="p-2 text-slate-400 hover:text-primary transition-colors">
-                  <span className="material-symbols-outlined">mic</span>
+                <button 
+                  onClick={isRecording ? stopRecording : startRecording}
+                  className={`p-2 transition-colors relative ${isRecording ? 'text-error animate-pulse' : 'text-slate-400 hover:text-primary'}`}
+                >
+                  <span className="material-symbols-outlined">{isRecording ? 'stop_circle' : 'mic'}</span>
+                  {isRecording && <span className="absolute top-1 right-1 w-2 h-2 bg-error rounded-full block animate-ping"></span>}
                 </button>
                 <button onClick={() => handleSend(input)} className="bg-primary text-on-primary w-12 h-12 rounded-xl flex items-center justify-center hover:shadow-[0_0_20px_rgba(173,198,255,0.3)] transition-all active:scale-95">
                   <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>send</span>
