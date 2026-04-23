@@ -116,6 +116,7 @@ app.post('/api/query', async (req, res) => {
 });
 
 app.post('/api/ai-query', async (req, res) => {
+  let isRuleMatched = false;
   try {
     const { prompt } = req.body;
     if (!process.env.GROQ_API_KEY) {
@@ -123,7 +124,7 @@ app.post('/api/ai-query', async (req, res) => {
     }
     
     let generatedSql = "";
-    let isRuleMatched = true;
+    isRuleMatched = true;
     const lower = prompt.toLowerCase();
     
     // NATIVE AI RULE ENGINE: 8 Matchers
@@ -231,15 +232,22 @@ app.post('/api/ai-query', async (req, res) => {
     let formattedRows = rows;
     
     // Handle multiple statement result Arrays
-    const resultToCheck = Array.isArray(rows) && Array.isArray(rows[0]) ? rows[rows.length - 1] : rows;
-    const fieldsToCheck = Array.isArray(fields) && Array.isArray(fields[0]) ? fields[fields.length - 1] : fields;
+    const resultToCheck = Array.isArray(rows) && !!rows[0] && Array.isArray(rows[0]) ? rows[rows.length - 1] : rows;
+    const fieldsToCheck = Array.isArray(fields) && !!fields[0] && Array.isArray(fields[0]) ? fields[fields.length - 1] : fields;
 
-    if (fieldsToCheck) {
+    if (fieldsToCheck && Array.isArray(fieldsToCheck) && fieldsToCheck[0] && fieldsToCheck[0].name) {
       columns = fieldsToCheck.map(f => ({ name: f.name, type: f.columnType }));
       formattedRows = resultToCheck;
     } else {
       columns = [{ name: 'Rule_AI_Action', type: 253 }, { name: 'Affected_Rows', type: 3 }];
-      formattedRows = [{ Rule_AI_Action: 'Command Executed Smoothly', Affected_Rows: resultToCheck.affectedRows || 0 }];
+      
+      let totalAffected = 0;
+      if (Array.isArray(rows)) {
+         rows.forEach(r => { if(r && r.affectedRows) totalAffected += r.affectedRows; });
+      } else if (rows && rows.affectedRows) {
+         totalAffected = rows.affectedRows;
+      }
+      formattedRows = [{ Rule_AI_Action: 'Command Executed Smoothly', Affected_Rows: totalAffected }];
     }
     
     res.json({ sql: generatedSql, rows: formattedRows, columns });
@@ -333,15 +341,22 @@ app.post('/api/voice-query', upload.single('audio'), async (req, res) => {
     let formattedRows = rows;
     
     // Handle multiple statement result Arrays
-    const resultToCheck = Array.isArray(rows) && Array.isArray(rows[0]) ? rows[rows.length - 1] : rows;
-    const fieldsToCheck = Array.isArray(fields) && Array.isArray(fields[0]) ? fields[fields.length - 1] : fields;
+    const resultToCheck = Array.isArray(rows) && !!rows[0] && Array.isArray(rows[0]) ? rows[rows.length - 1] : rows;
+    const fieldsToCheck = Array.isArray(fields) && !!fields[0] && Array.isArray(fields[0]) ? fields[fields.length - 1] : fields;
 
-    if (fieldsToCheck) {
+    if (fieldsToCheck && Array.isArray(fieldsToCheck) && fieldsToCheck[0] && fieldsToCheck[0].name) {
       columns = fieldsToCheck.map(f => ({ name: f.name, type: f.columnType }));
       formattedRows = resultToCheck;
     } else {
       columns = [{ name: 'Voice_AI_Action', type: 253 }, { name: 'Affected_Rows', type: 3 }];
-      formattedRows = [{ Voice_AI_Action: 'Voice Command Executed', Affected_Rows: resultToCheck.affectedRows || 0 }];
+      
+      let totalAffected = 0;
+      if (Array.isArray(rows)) {
+         rows.forEach(r => { if(r && r.affectedRows) totalAffected += r.affectedRows; });
+      } else if (rows && rows.affectedRows) {
+         totalAffected = rows.affectedRows;
+      }
+      formattedRows = [{ Voice_AI_Action: 'Voice Command Executed', Affected_Rows: totalAffected }];
     }
     
     res.json({ sql: generatedSql, transcript: transcriptText, rows: formattedRows, columns });
