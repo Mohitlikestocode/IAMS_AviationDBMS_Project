@@ -43,7 +43,11 @@ const AiQuery = () => {
       });
       const data = await response.json();
       
-      setMessages(prev => [...prev, { role: 'ai', data }]);
+      if (!response.ok) {
+        setMessages(prev => [...prev, { role: 'ai', error: `${data.error} \n\n${data.sql}` }]);
+      } else {
+        setMessages(prev => [...prev, { role: 'ai', data }]);
+      }
     } catch (err) {
       setMessages(prev => [...prev, { role: 'ai', error: 'Failed to connect to AI Core.' }]);
     } finally {
@@ -92,10 +96,18 @@ const AiQuery = () => {
         body: formData
       });
       const data = await response.json();
-      setMessages(prev => {
-        const replaceUser = prev.map(m => m.id === tempId ? { role: 'user', content: `🎙️ "${data.transcript}"` } : m);
-        return [...replaceUser, { role: 'ai', data }];
-      });
+      
+      if (!response.ok) {
+        setMessages(prev => {
+          const replaceUser = prev.map(m => m.id === tempId ? { role: 'user', content: `🎙️ "${data.transcript || 'Transcribed Voice Command'}"` } : m);
+          return [...replaceUser, { role: 'ai', error: `${data.error} \n\n${data.sql}` }];
+        });
+      } else {
+        setMessages(prev => {
+          const replaceUser = prev.map(m => m.id === tempId ? { role: 'user', content: `🎙️ "${data.transcript}"` } : m);
+          return [...replaceUser, { role: 'ai', data }];
+        });
+      }
     } catch (err) {
       setMessages(prev => [...prev, { role: 'ai', error: 'Groq Voice Protocol connection failed.' }]);
     } finally {

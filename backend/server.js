@@ -256,12 +256,13 @@ app.post('/api/ai-query', async (req, res) => {
     const origin = isRuleMatched ? "Rule-Based Engine Framework" : "Llama-3 LLM Engine";
     res.status(500).json({ 
       error: error.message, 
-      sql: `Execution failed. Origin: ${origin}. Make sure your rules generate unique queries.` 
+      sql: `Execution failed. Origin: ${origin}. Make sure your rules generate unique queries.\n\nFailing Statement:\n${generatedSql || 'None Generated'}` 
     }); 
   }
 });
 
 app.post('/api/voice-query', upload.single('audio'), async (req, res) => {
+  let generatedSql = "";
   try {
     if (!process.env.GROQ_API_KEY) {
       if (req.file) fs.unlinkSync(req.file.path);
@@ -313,7 +314,7 @@ app.post('/api/voice-query', upload.single('audio'), async (req, res) => {
       model: 'llama-3.1-8b-instant'
     });
     
-    let generatedSql = result.choices[0].message.content.trim();
+    generatedSql = result.choices[0].message.content.trim();
     generatedSql = generatedSql.replace(/^[`]*/g, '').replace(/sql\n/i, '').replace(/[`]*$/g, '').trim();
 
     // 3. Execution & Audit
@@ -362,7 +363,7 @@ app.post('/api/voice-query', upload.single('audio'), async (req, res) => {
     res.json({ sql: generatedSql, transcript: transcriptText, rows: formattedRows, columns });
   } catch (error) {
     if (req.file) { try { fs.unlinkSync(req.file.path); } catch(err){} }
-    res.status(500).json({ error: error.message, sql: "Voice synthesis failed or SQL execution failed." });
+    res.status(500).json({ error: error.message, sql: `Voice synthesis failed or SQL execution failed.\n\nFailing Statement:\n${generatedSql || 'None Generated'}` });
   }
 });
 
