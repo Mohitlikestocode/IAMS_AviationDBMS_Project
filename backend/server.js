@@ -128,11 +128,16 @@ app.post('/api/ai-query', async (req, res) => {
     
     // NATIVE AI RULE ENGINE: 8 Matchers
     if (lower.startsWith("add passenger") || lower.startsWith("add user")) {
-      const nameMatch = prompt.match(/add (?:passenger|user)\s+(.+)/i);
+      const nameMatch = prompt.match(/add (?:passenger|user)\s+([a-zA-Z]+)\s+([a-zA-Z]+)/i);
       if(nameMatch) {
-         generatedSql = `INSERT INTO passenger (name, passport_no, phone) VALUES ('${nameMatch[1].trim()}', 'PASS_NEW_${Math.floor(Math.random()*1000)}', '555-0000');`;
+         generatedSql = `INSERT INTO passenger (first_name, last_name, email, passport_no, phone, date_of_birth) VALUES ('${nameMatch[1]}', '${nameMatch[2]}', '${nameMatch[1].toLowerCase()}@example.com', 'PASS_NEW_${Math.floor(Math.random()*1000)}', '555-0000', '1995-10-15');`;
       } else {
-         generatedSql = "INSERT INTO passenger (name, passport_no, phone) VALUES ('New Passenger', 'PASS_NEW', '555-1234');";
+         const singleMatch = prompt.match(/add (?:passenger|user)\s+([a-zA-Z]+)/i);
+         if(singleMatch) {
+            generatedSql = `INSERT INTO passenger (first_name, last_name, email, passport_no, phone, date_of_birth) VALUES ('${singleMatch[1]}', 'User', '${singleMatch[1].toLowerCase()}@example.com', 'PASS_NEW_${Math.floor(Math.random()*1000)}', '555-1234', '1990-01-01');`;
+         } else {
+            generatedSql = "INSERT INTO passenger (first_name, last_name, email, passport_no, phone, date_of_birth) VALUES ('New', 'Passenger', 'new@example.com', 'PASS_NEW', '555-1234', '1990-01-01');";
+         }
       }
     }
     else if (lower.startsWith("delete passenger") || lower.startsWith("delete user")) {
@@ -144,13 +149,13 @@ app.post('/api/ai-query', async (req, res) => {
       }
     }
     else if (lower.includes("list all passenger") || lower.includes("show passengers")) {
-      generatedSql = "SELECT passenger_id, name, passport_no, phone FROM passenger;";
+      generatedSql = "SELECT passenger_id, first_name, last_name, email, phone, date_of_birth FROM passenger;";
     }
     else if (lower.includes("active flight")) {
       generatedSql = "SELECT * FROM flight WHERE status = 'Active';";
     }
     else if (lower.includes("more than 500 flight hour") || lower.includes("500") || lower.includes("pilot")) {
-      generatedSql = "SELECT name, role FROM crew WHERE role = 'Pilot';";
+      generatedSql = "SELECT name, role, flight_hours FROM crew WHERE role = 'Pilot' AND flight_hours > 500;";
     }
     else if (lower.includes("revenue per flight")) {
       generatedSql = "SELECT f.flight_id, SUM(p.amount) as flight_revenue FROM flight f JOIN ticket t ON f.flight_id = t.flight_id JOIN booking b ON t.booking_id = b.booking_id JOIN payment p ON b.booking_id = p.booking_id GROUP BY f.flight_id;";
@@ -171,12 +176,12 @@ app.post('/api/ai-query', async (req, res) => {
         Table airport (airport_id, name, city, country)
         Table flight (flight_id, airline_id, aircraft_id, source_airport_id, destination_airport_id, departure_time, arrival_time, status)
         Table seat (seat_id, aircraft_id, seat_number, class, is_window)
-        Table passenger (passenger_id, name, passport_no, phone)
+        Table passenger (passenger_id, first_name, last_name, email, passport_no, phone, date_of_birth)
         Table booking (booking_id, passenger_id, booking_date, total_amount)
         Table ticket (ticket_id, booking_id, flight_id, seat_id, price, status)
         Table payment (payment_id, booking_id, method, amount, status)
         Table pricing (pricing_id, flight_id, base_price, demand_factor, final_price)
-        Table crew (crew_id, name, role)
+        Table crew (crew_id, name, role, flight_hours)
         Table flight_crew (flight_id, crew_id)
         Table system_user (user_id, email, password, permissions)
         Table audit_log (audit_id, action_type, log_details, timestamp)
@@ -270,12 +275,12 @@ app.post('/api/voice-query', upload.single('audio'), async (req, res) => {
       Table airport (airport_id, name, city, country)
       Table flight (flight_id, airline_id, aircraft_id, source_airport_id, destination_airport_id, departure_time, arrival_time, status)
       Table seat (seat_id, aircraft_id, seat_number, class, is_window)
-      Table passenger (passenger_id, name, passport_no, phone)
+      Table passenger (passenger_id, first_name, last_name, email, passport_no, phone, date_of_birth)
       Table booking (booking_id, passenger_id, booking_date, total_amount)
       Table ticket (ticket_id, booking_id, flight_id, seat_id, price, status)
       Table payment (payment_id, booking_id, method, amount, status)
       Table pricing (pricing_id, flight_id, base_price, demand_factor, final_price)
-      Table crew (crew_id, name, role)
+      Table crew (crew_id, name, role, flight_hours)
       Table flight_crew (flight_id, crew_id)
       Table system_user (user_id, email, password, permissions)
       Table audit_log (audit_id, action_type, log_details, timestamp)
