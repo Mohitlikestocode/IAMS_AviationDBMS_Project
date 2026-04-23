@@ -194,7 +194,8 @@ app.post('/api/ai-query', async (req, res) => {
       
       RULES:
       - Translate intent perfectly into SQL.
-      - If the user asks for multi-insert or complex actions, write multiple statements separated by semicolon.
+      - EXACT ENTITY MATCHING ONLY: ONLY generate SQL for the specific entities the user explicitly mentions. (e.g. If adding a passenger, strictly ONLY output the INSERT INTO passenger statement. Do absolutely NOT generate unrelated airlines, flights, airports, or bookings).
+      - If the user explicitly asks for complex multi-actions, write multiple statements separated by semicolon.
       - Always assume generic data formatting if not fully specified (e.g., auto-generate a passport_no if none is provided).
       - NEVER manually insert into AUTO_INCREMENT primary key columns (like passenger_id). The database handles them.
       - RESPOND WITH ONLY THE RAW SQL STRING. Do not use block quotes or markdown.`;
@@ -306,7 +307,8 @@ app.post('/api/voice-query', upload.single('audio'), async (req, res) => {
     
     RULES:
     - Translate intent perfectly into SQL.
-    - If the user asks for multi-insert or complex actions (e.g. adding a user AND a ticket), write multiple statements separated by semicolon.
+    - EXACT ENTITY MATCHING ONLY: ONLY generate SQL for the specific entities the user explicitly mentions. (e.g. If adding a passenger, strictly ONLY output the INSERT INTO passenger statement. Do absolutely NOT generate unrelated airlines, flights, airports, or bookings).
+    - If the user explicitly asks for complex multi-actions, write multiple statements separated by semicolon.
     - Always assume generic data formatting if not fully specified (e.g., auto-generate a passport_no if none is provided).
     - NEVER manually insert into AUTO_INCREMENT primary key columns (like passenger_id). The database handles them.
     - RESPOND WITH ONLY THE RAW SQL STRING. Do not use block quotes or markdown.`;
