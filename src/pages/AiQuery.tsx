@@ -1,16 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 
 const exampleQueries = [
-  "Show all active flights",
-  "Which pilots have more than 500 flight hours this year?",
-  "Show flights from Delhi to Mumbai",
+  "Add passenger Mohit Sharma",
+  "Delete passenger 2",
   "List all passengers",
-  "Show total revenue",
+  "Add user Amit Singh",
+  "Show active flights",
+  "Which pilots have more than 500 flight hours?",
   "Revenue per flight",
-  "Show delayed flights",
-  "List all aircrafts",
-  "Show passenger counts per flight",
-  "Find bookings for John Doe"
+  "Show passenger counts per flight"
 ];
 
 const AiQuery = () => {

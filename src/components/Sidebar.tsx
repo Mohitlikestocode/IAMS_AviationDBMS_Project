@@ -43,16 +43,8 @@ const Sidebar = () => {
           </Link>
         ))}
       </nav>
-      <div className="mt-auto space-y-1">
-        <button onClick={() => alert("Redirecting to New Flight forms...")} className="w-full mb-4 py-3 rounded-xl bg-primary text-on-primary font-bold text-sm active:scale-95 transition-transform">
-          New Flight
-        </button>
-        <button onClick={() => alert("Settings panel opening...")} className="w-full flex items-center justify-start gap-3 px-4 py-3 rounded-xl font-['Inter'] tracking-[-0.01em] text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-[#31353d]/20 transition-colors">
-          <span className="material-symbols-outlined">settings</span> Settings
-        </button>
-        <button onClick={() => alert("Support ticket gateway opening...")} className="w-full flex items-center justify-start gap-3 px-4 py-3 rounded-xl font-['Inter'] tracking-[-0.01em] text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-[#31353d]/20 transition-colors">
-          <span className="material-symbols-outlined">help</span> Support
-        </button>
+      <div className="mt-auto space-y-1 mb-8">
+        <p className="px-4 text-xs font-bold text-slate-600 uppercase tracking-widest text-center">Version 1.0 (PRO)</p>
       </div>
     </aside>
   );

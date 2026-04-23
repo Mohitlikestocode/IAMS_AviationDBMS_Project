@@ -18,10 +18,7 @@ const Topbar = () => {
 </nav>
 <div className="h-4 w-px bg-outline-variant/30"></div>
 <div className="flex items-center gap-4">
-<span className="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors" data-icon="notifications">notifications</span>
-<span className="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors" data-icon="dark_mode">dark_mode</span>
-<button className="bg-surface-container-highest/40 border border-outline-variant/20 px-4 py-1.5 rounded-full text-xs hover:bg-surface-container-high transition-colors">Logs</button>
-<button className="bg-primary text-on-primary px-4 py-1.5 rounded-full text-xs font-bold hover:glow-primary transition-all">Deploy Update</button>
+<button onClick={() => window.location.href='/tables'} className="bg-surface-container-highest/40 border border-outline-variant/20 px-4 py-1.5 rounded-full text-xs hover:bg-surface-container-high transition-colors">Logs</button>
 <img className="w-8 h-8 rounded-full border border-primary/20" data-alt="Portrait of a focused senior aviation operations officer with graying hair in a clean professional setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaROqJeb4LQhbcdQBvCWcMoIoEYVU5R-PwDWZhpArEKwBCiFlGSnIHeHZeoIFr1mkaAlzWcV3q6nCOBL6LN1SRkbYyPWxLxBE95RjsxKCkBxlHyRnP6_HiNgsi1EZm5wEKjrLngD4zV4DJNSmyMYyZqq7AZCBUam2U9JEEycRTePwGHdwhtbDWHQNn2CxCWwpcPAZsSZpqnZlaXXPPA1KWey2t7TQ1QK_jcdlLwzlkntGpKIiU12co4bjR-A6KUyJy0dhVEHPVL8Q"/>
 </div>
 </div>

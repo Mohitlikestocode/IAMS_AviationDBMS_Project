@@ -134,13 +134,13 @@ app.post('/api/ai-query', async (req, res) => {
     } else if (lower.includes("total revenue")) {
       generatedSql = "SELECT SUM(amount) as total_revenue FROM payment WHERE status = 'Completed';";
     } else if (lower.includes("revenue per flight")) {
-      generatedSql = "SELECT f.flight_number, SUM(p.amount) as flight_revenue FROM flight f JOIN ticket t ON f.flight_id = t.flight_id JOIN booking b ON t.booking_id = b.booking_id JOIN payment p ON b.payment_id = p.payment_id GROUP BY f.flight_id;";
+      generatedSql = "SELECT f.flight_number, SUM(p.amount) as flight_revenue FROM flight f JOIN ticket t ON f.flight_id = t.flight_id JOIN booking b ON t.booking_id = b.booking_id JOIN payment p ON b.payment_id = p.payment_id GROUP BY f.flight_id, f.flight_number;";
     } else if (lower.includes("delayed flight")) {
       generatedSql = "SELECT flight_number, destination_airport_id, scheduled_departure, status FROM flight WHERE status = 'Delayed';";
     } else if (lower.includes("list all aircraft") || lower.includes("show aircrafts")) {
       generatedSql = "SELECT aircraft_id, model, capacity, manufacturer, status FROM aircraft;";
     } else if (lower.includes("counts per flight") || lower.includes("passenger count")) {
-      generatedSql = "SELECT f.flight_number, COUNT(t.ticket_id) as total_passengers FROM flight f LEFT JOIN ticket t ON f.flight_id = t.flight_id GROUP BY f.flight_id;";
+      generatedSql = "SELECT f.flight_number, COUNT(t.ticket_id) as total_passengers FROM flight f LEFT JOIN ticket t ON f.flight_id = t.flight_id GROUP BY f.flight_id, f.flight_number;";
     } else if (lower.includes("john doe")) {
       generatedSql = "SELECT b.booking_id, b.booking_date, b.booking_reference, b.status FROM booking b JOIN passenger p ON b.passenger_id = p.passenger_id WHERE p.first_name = 'John' AND p.last_name = 'Doe';";
     } 
