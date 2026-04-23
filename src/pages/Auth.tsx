@@ -103,6 +103,18 @@ const Auth = () => {
 </button>
 </div>
 </form>
+
+{/* Demo Login Buttons */}
+<div className="mt-6 flex gap-3">
+  <button onClick={() => { setEmail('admin@iams.com'); setPassword('admin123'); }} className="flex-1 py-3 bg-surface-container-low hover:bg-surface-container border border-white/5 rounded-xl text-xs font-bold text-on-surface-variant transition-colors flex items-center justify-center gap-1.5 flex-col">
+    <span className="material-symbols-outlined text-sm">badge</span>
+    Admin Demo
+  </button>
+  <button onClick={() => { setEmail('controller@iams.com'); setPassword('command'); }} className="flex-1 py-3 bg-primary/10 hover:bg-primary/20 border border-primary/20 rounded-xl text-xs font-bold text-primary transition-colors flex items-center justify-center gap-1.5 flex-col">
+    <span className="material-symbols-outlined text-sm">security_update_good</span>
+    Super Admin Demo
+  </button>
+</div>
 {/* Footer Links */}
 <div className="mt-10 pt-8 border-t border-white/5 text-center">
 <p className="text-sm text-on-surface-variant">
