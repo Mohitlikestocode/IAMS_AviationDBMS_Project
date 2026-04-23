@@ -4,14 +4,12 @@ import { Link, useLocation } from 'react-router-dom';
 const Sidebar = () => {
   const location = useLocation();
 
-  const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
     { name: 'Database Tables', path: '/tables', icon: 'table_chart' },
     { name: 'SQL Console', path: '/sql', icon: 'terminal' },
     { name: 'AI Query', path: '/ai-query', icon: 'psychology', fill: true },
     { name: 'Passengers', path: '/passengers', icon: 'group' },
-    { name: 'Bookings', path: '/reservations', icon: 'confirmation_number' },
-    { name: 'Analytics', path: '/analytics', icon: 'analytics' },
+    { name: 'Version Control', path: '/version-control', icon: 'history' },
   ];
 
   const baseClass = "flex items-center gap-3 px-4 py-3 rounded-xl font-['Inter'] tracking-[-0.01em] text-sm font-medium transition-colors duration-200";

@@ -16,10 +16,9 @@ const Auth = () => {
       const res = await fetch('http://localhost:5000/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
       const data = await res.json();
       if (data.success) {
+        localStorage.setItem('userRole', data.permissions);
         navigate('/dashboard');
       } else {
         setError(data.error || 'Authentication Failed');
@@ -57,9 +56,16 @@ const Auth = () => {
 {/* Auth Card */}
 <div className="w-full max-w-md">
 <div className="glass-panel p-8 md:p-10 rounded-[2rem] border border-white/5 shadow-2xl">
+<div className="mb-6 flex border-b border-white/10">
+  <button type="button" className="flex-1 pb-3 text-sm font-bold text-primary border-b-2 border-primary uppercase tracking-wider">Direct Access</button>
+  <button type="button" onClick={() => alert("OTP System Offline. Please use Direct Access Node.")} className="flex-1 pb-3 text-sm font-bold text-slate-500 hover:text-slate-300 uppercase tracking-wider transition-colors">Generate OTP</button>
+</div>
 <div className="mb-8">
 <h2 className="text-2xl font-bold tracking-tight text-on-background">System Access</h2>
 <p className="text-on-surface-variant text-sm mt-2">Enter credentials for secure flight operations.</p>
+<div className="bg-primary-container/20 border border-primary/20 rounded-xl p-3 mt-4">
+  <p className="text-primary text-xs font-mono"><strong className="mr-2">HINTS:</strong><br/>admin@iams.com / admin123 (Admin)<br/>controller@iams.com / command (Super Admin)</p>
+</div>
 </div>
 <form className="space-y-6" onSubmit={handleSubmit}>
 {/* Error Display */}

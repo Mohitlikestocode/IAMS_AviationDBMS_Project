@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 const Dashboard = () => {
   const [kpis, setKpis] = useState({ flights: 0, passengers: 0, bookings: 0, revenue: 0 });
+  const [logs, setLogs] = useState([]);
 
   useEffect(() => {
     const fetchKPIs = async () => {
@@ -31,7 +32,17 @@ const Dashboard = () => {
          console.error('Network Error:', err);
       }
     };
+    
+    const fetchLogs = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/audit-logs');
+        const data = await res.json();
+        if (data.success) setLogs(data.logs.slice(0, 5));
+      } catch (err) { console.error(err); }
+    };
+
     fetchKPIs();
+    fetchLogs();
   }, []);
 
   return (
@@ -233,45 +244,20 @@ const Dashboard = () => {
 <button onClick={() => alert("Loading history logs...")} className="text-xs text-primary font-bold">View History</button>
 </div>
 <div className="space-y-4">
-<div className="flex items-center gap-4 bg-surface-container-highest/20 p-4 rounded-xl">
-<div className="bg-error-container/20 w-10 h-10 rounded-full flex items-center justify-center">
-<span className="material-symbols-outlined text-error" data-icon="error">error</span>
-</div>
-<div className="flex-grow">
-<h4 className="text-sm font-bold">Delayed Signal: flight-X702</h4>
-<p className="text-xs text-on-surface-variant">Telemetry sync lost in North Atlantic sector 4.</p>
-</div>
-<div className="text-right">
-<div className="text-[10px] text-on-surface-variant mb-1">02m ago</div>
-<span className="px-2 py-0.5 bg-error-container text-on-error-container text-[10px] font-bold rounded-full">CRITICAL</span>
-</div>
-</div>
-<div className="flex items-center gap-4 bg-surface-container-highest/20 p-4 rounded-xl opacity-80">
-<div className="bg-primary/20 w-10 h-10 rounded-full flex items-center justify-center">
-<span className="material-symbols-outlined text-primary" data-icon="info">info</span>
-</div>
-<div className="flex-grow">
-<h4 className="text-sm font-bold">Protocol Update Scheduled</h4>
-<p className="text-xs text-on-surface-variant">Auto-deployment of firmware v2.4.1 starting at 04:00 UTC.</p>
-</div>
-<div className="text-right">
-<div className="text-[10px] text-on-surface-variant mb-1">45m ago</div>
-<span className="px-2 py-0.5 bg-surface-container-highest text-on-surface text-[10px] font-bold rounded-full">INFO</span>
-</div>
-</div>
-<div className="flex items-center gap-4 bg-surface-container-highest/20 p-4 rounded-xl opacity-80">
-<div className="bg-primary/20 w-10 h-10 rounded-full flex items-center justify-center">
-<span className="material-symbols-outlined text-primary" data-icon="settings_input_component">settings_input_component</span>
-</div>
-<div className="flex-grow">
-<h4 className="text-sm font-bold">Component Calibrated</h4>
-<p className="text-xs text-on-surface-variant">LIDAR array at Zurich Hub recalibration successful.</p>
-</div>
-<div className="text-right">
-<div className="text-[10px] text-on-surface-variant mb-1">1h ago</div>
-<span className="px-2 py-0.5 bg-surface-container-highest text-on-surface text-[10px] font-bold rounded-full">RESOLVED</span>
-</div>
-</div>
+  {logs.length === 0 ? <p className="text-sm text-on-surface-variant">No recent operations.</p> : logs.map((log: any) => (
+  <div key={log.audit_id} className="flex items-center gap-4 bg-surface-container-highest/20 p-4 rounded-xl">
+    <div className="bg-primary/20 w-10 h-10 rounded-full flex items-center justify-center">
+    <span className="material-symbols-outlined text-primary" data-icon="terminal">terminal</span>
+    </div>
+    <div className="flex-grow max-w-[80%]">
+    <h4 className="text-sm font-bold truncate">{log.action_type}</h4>
+    <p className="text-xs text-on-surface-variant line-clamp-2">{log.log_details}</p>
+    </div>
+    <div className="text-right">
+    <div className="text-[10px] text-on-surface-variant mb-1">{new Date(log.timestamp).toLocaleTimeString()}</div>
+    </div>
+  </div>
+  ))}
 </div>
 </div>
 </div>

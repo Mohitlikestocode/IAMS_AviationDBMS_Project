@@ -9,8 +9,7 @@ import Tables from './pages/Tables';
 import SqlConsole from './pages/SqlConsole';
 import AiQuery from './pages/AiQuery';
 import Passengers from './pages/Passengers';
-import Reservations from './pages/Reservations';
-import Analytics from './pages/Analytics';
+import VersionControl from './pages/VersionControl';
 import Auth from './pages/Auth';
 
 function AppLayout({ children }: { children: React.ReactNode }) {
@@ -35,8 +34,7 @@ function App() {
         <Route path="/sql" element={<AppLayout><SqlConsole /></AppLayout>} />
         <Route path="/ai-query" element={<AppLayout><AiQuery /></AppLayout>} />
         <Route path="/passengers" element={<AppLayout><Passengers /></AppLayout>} />
-        <Route path="/reservations" element={<AppLayout><Reservations /></AppLayout>} />
-        <Route path="/analytics" element={<AppLayout><Analytics /></AppLayout>} />
+        <Route path="/version-control" element={<AppLayout><VersionControl /></AppLayout>} />
         
         {/* Default route */}
         <Route path="/" element={<Navigate to="/dashboard" replace />} />

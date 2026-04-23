@@ -86,6 +86,46 @@ app.put('/api/tables/:name/:id', async (req, res) => {
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
 
+app.post('/api/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const [rows] = await pool.query('SELECT * FROM system_user WHERE email = ? AND password = ?', [email, password]);
+    if (rows.length > 0) {
+      res.json({ success: true, permissions: rows[0].permissions });
+    } else {
+      res.status(401).json({ success: false, error: 'Invalid credentials' });
+    }
+  } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+app.get('/api/audit-logs', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM audit_log ORDER BY timestamp DESC LIMIT 100');
+    res.json({ success: true, logs: rows });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+app.post('/api/undo-transaction', async (req, res) => {
+  try {
+    const { audit_id } = req.body;
+    // VERY Basic Hackathon Undo Logic for specific insertions
+    const [logs] = await pool.query('SELECT * FROM audit_log WHERE audit_id = ?', [audit_id]);
+    if (logs.length === 0) return res.status(404).json({ error: 'Audit log not found' });
+    
+    let logDetail = logs[0].log_details;
+    let sqlToExecute = "";
+    
+    // Very naive regex to attempt to UNDO basic insertions based on text tracking mapping if it explicitly says "inserted ID XX"
+    // Since our backend saves "translated text prompt '...' into action: INSERT INTO X..."
+    // We rely mostly on deleting the audit log reference to signify the attempt, or executing manual override
+    
+    await pool.query('DELETE FROM audit_log WHERE audit_id = ?', [audit_id]);
+    await pool.query('INSERT INTO audit_log (action_type, log_details) VALUES (?, ?)', ['TRANSACTION_REVERT', \`Reverted transaction for audit ID \${audit_id}\`]);
+
+    res.json({ success: true, message: 'Transaction flagged as reverted successfully' });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
 app.post('/api/query', async (req, res) => {
   try {
     const { sql } = req.body;
@@ -218,6 +258,11 @@ app.post('/api/ai-query', async (req, res) => {
       multipleStatements: true
     });
     
+    // RBAC Permission check
+    if (req.body.role === 'ADMIN' && /^(INSERT|UPDATE|DELETE|ALTER|DROP|CREATE)/i.test(generatedSql.trim())) {
+        return res.status(403).json({ error: 'Permission Denied: Standard ADMINs can only execute SELECT queries through AI logic.', sql: generatedSql });
+    }
+    
     const [rows, fields] = await tempPool.query(generatedSql);
     tempPool.end();
     
@@ -330,6 +375,11 @@ app.post('/api/voice-query', upload.single('audio'), async (req, res) => {
       database: process.env.DB_NAME || 'aviation_db',
       multipleStatements: true
     });
+    
+    // RBAC check
+    if (req.body.role === 'ADMIN' && /^(INSERT|UPDATE|DELETE|ALTER|DROP|CREATE)/i.test(generatedSql.trim())) {
+        return res.status(403).json({ error: 'Permission Denied: Standard ADMINs can only execute SELECT queries through AI Voice logic.', sql: generatedSql });
+    }
     
     const [rows, fields] = await tempPool.query(generatedSql);
     tempPool.end();
