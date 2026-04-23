@@ -22,6 +22,14 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const role = localStorage.getItem('userRole');
+  if (!role) {
+    return <Navigate to="/auth" replace />;
+  }
+  return <>{children}</>;
+};
+
 function App() {
   return (
     <Router>
@@ -29,12 +37,12 @@ function App() {
         <Route path="/auth" element={<Auth />} />
         
         {/* App Routes */}
-        <Route path="/dashboard" element={<AppLayout><Dashboard /></AppLayout>} />
-        <Route path="/tables" element={<AppLayout><Tables /></AppLayout>} />
-        <Route path="/sql" element={<AppLayout><SqlConsole /></AppLayout>} />
-        <Route path="/ai-query" element={<AppLayout><AiQuery /></AppLayout>} />
-        <Route path="/passengers" element={<AppLayout><Passengers /></AppLayout>} />
-        <Route path="/version-control" element={<AppLayout><VersionControl /></AppLayout>} />
+        <Route path="/dashboard" element={<ProtectedRoute><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
+        <Route path="/tables" element={<ProtectedRoute><AppLayout><Tables /></AppLayout></ProtectedRoute>} />
+        <Route path="/sql" element={<ProtectedRoute><AppLayout><SqlConsole /></AppLayout></ProtectedRoute>} />
+        <Route path="/ai-query" element={<ProtectedRoute><AppLayout><AiQuery /></AppLayout></ProtectedRoute>} />
+        <Route path="/passengers" element={<ProtectedRoute><AppLayout><Passengers /></AppLayout></ProtectedRoute>} />
+        <Route path="/version-control" element={<ProtectedRoute><AppLayout><VersionControl /></AppLayout></ProtectedRoute>} />
         
         {/* Default route */}
         <Route path="/" element={<Navigate to="/dashboard" replace />} />

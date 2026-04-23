@@ -42,7 +42,14 @@ const Sidebar = () => {
           </Link>
         ))}
       </nav>
-      <div className="mt-auto space-y-1 mb-8">
+      <div className="mt-auto space-y-4 mb-4">
+        <button 
+          onClick={() => { localStorage.removeItem('userRole'); window.location.href = '/auth'; }}
+          className="w-full flex items-center justify-center gap-2 px-4 py-3 text-error/80 hover:text-error hover:bg-error/10 rounded-xl font-bold uppercase text-[10px] tracking-widest transition-colors"
+        >
+          <span className="material-symbols-outlined text-sm">logout</span>
+          End Session
+        </button>
         <p className="px-4 text-xs font-bold text-slate-600 uppercase tracking-widest text-center">Version 1.0 (PRO)</p>
       </div>
     </aside>
