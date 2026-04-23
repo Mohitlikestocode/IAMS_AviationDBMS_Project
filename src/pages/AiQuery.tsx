@@ -39,7 +39,7 @@ const AiQuery = () => {
       const response = await fetch('http://localhost:5000/api/ai-query', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: text })
+        body: JSON.stringify({ prompt: text, role: localStorage.getItem('userRole') || 'ADMIN' })
       });
       const data = await response.json();
       
@@ -85,6 +85,7 @@ const AiQuery = () => {
     const blob = new Blob(audioChunks.current, { type: 'audio/webm' });
     const formData = new FormData();
     formData.append('audio', blob, 'voice.webm');
+    formData.append('role', localStorage.getItem('userRole') || 'ADMIN');
 
     setLoading(true);
     const tempId = Date.now();
