@@ -124,38 +124,33 @@ app.post('/api/ai-query', async (req, res) => {
     
     // NATIVE AI RULE ENGINE: Matches intent flexibly
     if (lower.includes("active flight")) {
-      generatedSql = "SELECT flight_number, status, departure_time, gate FROM flight WHERE status = 'Active';";
-    } else if (lower.includes("more than 500 flight hour") || lower.includes("500")) {
-      generatedSql = "SELECT c.first_name, c.last_name, c.flight_hours FROM crew c WHERE c.role = 'Pilot' AND c.flight_hours > 500;";
+      generatedSql = "SELECT * FROM flight WHERE status = 'Active';";
+    } else if (lower.includes("more than 500 flight hour") || lower.includes("500") || lower.includes("pilot")) {
+      generatedSql = "SELECT name, role FROM crew WHERE role = 'Pilot';";
     } else if (lower.includes("delhi to mumbai")) {
       generatedSql = "SELECT f.* FROM flight f JOIN airport a1 ON f.source_airport_id = a1.airport_id JOIN airport a2 ON f.destination_airport_id = a2.airport_id WHERE a1.city = 'Delhi' AND a2.city = 'Mumbai';";
     } else if (lower.includes("list all passenger") || lower.includes("show passengers")) {
-      generatedSql = "SELECT passenger_id, first_name, last_name, email, passport_number FROM passenger;";
+      generatedSql = "SELECT passenger_id, name, passport_no, phone FROM passenger;";
     } else if (lower.includes("total revenue")) {
       generatedSql = "SELECT SUM(amount) as total_revenue FROM payment WHERE status = 'Completed';";
     } else if (lower.includes("revenue per flight")) {
-      generatedSql = "SELECT f.flight_number, SUM(p.amount) as flight_revenue FROM flight f JOIN ticket t ON f.flight_id = t.flight_id JOIN booking b ON t.booking_id = b.booking_id JOIN payment p ON b.payment_id = p.payment_id GROUP BY f.flight_id, f.flight_number;";
+      generatedSql = "SELECT f.flight_id, SUM(p.amount) as flight_revenue FROM flight f JOIN ticket t ON f.flight_id = t.flight_id JOIN booking b ON t.booking_id = b.booking_id JOIN payment p ON b.booking_id = p.booking_id GROUP BY f.flight_id;";
     } else if (lower.includes("delayed flight")) {
-      generatedSql = "SELECT flight_number, destination_airport_id, scheduled_departure, status FROM flight WHERE status = 'Delayed';";
+      generatedSql = "SELECT * FROM flight WHERE status = 'Delayed';";
     } else if (lower.includes("list all aircraft") || lower.includes("show aircrafts")) {
-      generatedSql = "SELECT aircraft_id, model, capacity, manufacturer, status FROM aircraft;";
+      generatedSql = "SELECT aircraft_id, model, total_seats FROM aircraft;";
     } else if (lower.includes("counts per flight") || lower.includes("passenger count")) {
-      generatedSql = "SELECT f.flight_number, COUNT(t.ticket_id) as total_passengers FROM flight f LEFT JOIN ticket t ON f.flight_id = t.flight_id GROUP BY f.flight_id, f.flight_number;";
+      generatedSql = "SELECT f.flight_id, COUNT(t.ticket_id) as total_passengers FROM flight f LEFT JOIN ticket t ON f.flight_id = t.flight_id GROUP BY f.flight_id;";
     } else if (lower.includes("john doe")) {
-      generatedSql = "SELECT b.booking_id, b.booking_date, b.booking_reference, b.status FROM booking b JOIN passenger p ON b.passenger_id = p.passenger_id WHERE p.first_name = 'John' AND p.last_name = 'Doe';";
+      generatedSql = "SELECT b.booking_id, b.booking_date, b.total_amount FROM booking b JOIN passenger p ON b.passenger_id = p.passenger_id WHERE p.name LIKE '%John%';";
     } 
     // MUTATION RECOGNITION ENGINES
     else if (lower.startsWith("add passenger") || lower.startsWith("add user")) {
-      const nameMatch = prompt.match(/add (?:passenger|user) ([a-zA-Z]+)\s+([a-zA-Z]+)/i);
+      const nameMatch = prompt.match(/add (?:passenger|user)\s+(.+)/i);
       if(nameMatch) {
-         generatedSql = `INSERT INTO passenger (first_name, last_name, email, phone, passport_number) VALUES ('${nameMatch[1]}', '${nameMatch[2]}', '${nameMatch[1].toLowerCase()}@example.com', '555-0000', 'P00000');`;
+         generatedSql = `INSERT INTO passenger (name, passport_no, phone) VALUES ('${nameMatch[1].trim()}', 'PASS_NEW_${Math.floor(Math.random()*1000)}', '555-0000');`;
       } else {
-         const singleMatch = prompt.match(/add (?:passenger|user) ([a-zA-Z0-9_]+)/i);
-         if(singleMatch) {
-            generatedSql = `INSERT INTO passenger (first_name, last_name, email, phone, passport_number) VALUES ('${singleMatch[1]}', 'User', '${singleMatch[1].toLowerCase()}@example.com', '555-1234', 'NEW1234');`;
-         } else {
-            generatedSql = "INSERT INTO passenger (first_name, last_name, email, phone, passport_number) VALUES ('New', 'Passenger', 'new@example.com', '555-1234', 'NEW1234');";
-         }
+         generatedSql = "INSERT INTO passenger (name, passport_no, phone) VALUES ('New Passenger', 'PASS_NEW', '555-1234');";
       }
     }
     else if (lower.startsWith("delete passenger") || lower.startsWith("delete user")) {
@@ -167,19 +162,19 @@ app.post('/api/ai-query', async (req, res) => {
       }
     }
     else if (lower.startsWith("change flight") || lower.startsWith("update flight")) {
-      const match = prompt.match(/(?:update|change) flight ([A-Z0-9]+) to ([a-zA-Z]+)/i);
+      const match = prompt.match(/(?:update|change) flight (\d+) to ([a-zA-Z]+)/i);
       if(match) {
           const newStatus = match[2].charAt(0).toUpperCase() + match[2].slice(1).toLowerCase();
-          generatedSql = `UPDATE flight SET status = '${newStatus}' WHERE flight_number LIKE '%${match[1]}%';`;
+          generatedSql = `UPDATE flight SET status = '${newStatus}' WHERE flight_id = ${match[1]};`;
       } else {
           generatedSql = `UPDATE flight SET status = 'Delayed' WHERE flight_id = 1;`;
       }
     }
     else if (lower.startsWith("add aircraft")) {
-       generatedSql = `INSERT INTO aircraft (model, capacity, manufacturer, status) VALUES ('Boeing 737 Max', 180, 'Boeing', 'Active');`;
+       generatedSql = `INSERT INTO aircraft (airline_id, model, total_seats) VALUES (1, 'Boeing 737 Max', 180);`;
     }
     else if (lower.startsWith("add flight")) {
-       generatedSql = `INSERT INTO flight (flight_number, source_airport_id, destination_airport_id, status) VALUES ('AI-999', 1, 2, 'Active');`;
+       generatedSql = `INSERT INTO flight (airline_id, aircraft_id, source_airport_id, destination_airport_id, departure_time, arrival_time, status) VALUES (1, 1, 1, 2, NOW(), NOW(), 'Active');`;
     }
     else if (lower.includes("insert") || lower.includes("update") || lower.includes("delete")) {
       if (lower.startsWith("insert") || lower.startsWith("update") || lower.startsWith("delete")) {
@@ -217,7 +212,9 @@ app.post('/api/ai-query', async (req, res) => {
     
     res.json({ sql: generatedSql, rows: formattedRows, columns });
   } catch (error) { 
-    res.status(500).json({ error: error.message, sql: "Rule mismatch or syntax error." }); 
+    // We can't log generatedSql directly because the error might occur BEFORE it is fully processed.
+    console.error("AI QUERY ERROR:", error.message);
+    res.status(500).json({ error: error.message, sql: "Syntax error or Schema mismatch." }); 
   }
 });
 
@@ -242,15 +239,19 @@ app.post('/api/voice-query', upload.single('audio'), async (req, res) => {
     
     // 2. Synthesize SQL via LLM for complex context rules
     const dbSchema = `
-      Table aircraft (aircraft_id, model, capacity, manufacturer, status)
-      Table airport (airport_id, name, city, country, iata_code)
-      Table flight (flight_id, flight_number, source_airport_id, destination_airport_id, departure_time, arrival_time, scheduled_departure, status, gate, aircraft_id)
-      Table crew (crew_id, first_name, last_name, role, flight_hours)
-      Table passenger (passenger_id, first_name, last_name, email, phone, passport_number)
-      Table payment (payment_id, amount, payment_method, payment_date, status)
-      Table booking (booking_id, passenger_id, booking_reference, booking_date, payment_id, status)
-      Table ticket (ticket_id, booking_id, flight_id, seat_id)
-      Table seat (seat_id, aircraft_id, seat_number, class)
+      Table airline (airline_id, name, country)
+      Table aircraft (aircraft_id, airline_id, model, total_seats)
+      Table airport (airport_id, name, city, country)
+      Table flight (flight_id, airline_id, aircraft_id, source_airport_id, destination_airport_id, departure_time, arrival_time, status)
+      Table seat (seat_id, aircraft_id, seat_number, class, is_window)
+      Table passenger (passenger_id, name, passport_no, phone)
+      Table booking (booking_id, passenger_id, booking_date, total_amount)
+      Table ticket (ticket_id, booking_id, flight_id, seat_id, price, status)
+      Table payment (payment_id, booking_id, method, amount, status)
+      Table pricing (pricing_id, flight_id, base_price, demand_factor, final_price)
+      Table crew (crew_id, name, role)
+      Table flight_crew (flight_id, crew_id)
+      Table system_user (user_id, email, password, permissions)
       Table audit_log (audit_id, action_type, log_details, timestamp)
     `;
 
