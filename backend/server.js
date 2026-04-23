@@ -65,23 +65,23 @@ app.put('/api/tables/:name/:id', async (req, res) => {
     const keys = Object.keys(data);
     const values = Object.values(data);
     if (keys.length === 0) return res.status(400).json({ error: 'No data to update' });
-    
+
     const [cols] = await pool.query(`SHOW COLUMNS FROM \`${name}\``);
     if (!cols || cols.length === 0) return res.status(400).json({ error: 'Table not found' });
     const pk = cols[0].Field;
-    
+
     // Ignore primary key in UPDATE set
     const updateKeys = keys.filter(k => k !== pk);
     const updateValues = updateKeys.map(k => data[k]);
     const setClause = updateKeys.map(k => `\`${k}\` = ?`).join(', ');
-    
+
     const [result] = await pool.query(`UPDATE \`${name}\` SET ${setClause} WHERE \`${pk}\` = ?`, [...updateValues, id]);
-    
+
     await pool.query('INSERT INTO audit_log (action_type, log_details) VALUES (?, ?)', [
       `MANUAL_UPDATE`,
       `User explicitly updated record ID ${id} in table ${name}`
     ]);
-    
+
     res.json({ success: true, affectedRows: result.affectedRows });
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
@@ -111,14 +111,14 @@ app.post('/api/undo-transaction', async (req, res) => {
     // VERY Basic Hackathon Undo Logic for specific insertions
     const [logs] = await pool.query('SELECT * FROM audit_log WHERE audit_id = ?', [audit_id]);
     if (logs.length === 0) return res.status(404).json({ error: 'Audit log not found' });
-    
+
     let logDetail = logs[0].log_details;
     let sqlToExecute = "";
-    
+
     // Very naive regex to attempt to UNDO basic insertions based on text tracking mapping if it explicitly says "inserted ID XX"
     // Since our backend saves "translated text prompt '...' into action: INSERT INTO X..."
     // We rely mostly on deleting the audit log reference to signify the attempt, or executing manual override
-    
+
     await pool.query('DELETE FROM audit_log WHERE audit_id = ?', [audit_id]);
     await pool.query('INSERT INTO audit_log (action_type, log_details) VALUES (?, ?)', ['TRANSACTION_REVERT', \`Reverted transaction for audit ID \${audit_id}\`]);
 
@@ -137,8 +137,8 @@ app.post('/api/query', async (req, res) => {
     if (/^(INSERT|UPDATE|DELETE|ALTER|DROP|CREATE)/i.test(trimmedSql)) {
       const actionType = trimmedSql.split(' ')[0].toUpperCase();
       await pool.query('INSERT INTO audit_log (action_type, log_details) VALUES (?, ?)', [
-        `MANUAL_${actionType}`,
-        `Manual query execution: ${trimmedSql.substring(0, 200)}`
+        `MANUAL_${ actionType }`,
+        `Manual query execution: ${ trimmedSql.substring(0, 200) }`
       ]);
     }
 
@@ -171,22 +171,22 @@ app.post('/api/ai-query', async (req, res) => {
     if (lower.startsWith("add passenger") || lower.startsWith("add user")) {
       const nameMatch = prompt.match(/add (?:passenger|user)\s+([a-zA-Z]+)\s+([a-zA-Z]+)/i);
       if(nameMatch) {
-         generatedSql = `INSERT INTO passenger (first_name, last_name, email, passport_no, phone, date_of_birth) VALUES ('${nameMatch[1]}', '${nameMatch[2]}', '${nameMatch[1].toLowerCase()}_${Math.floor(Math.random()*10000)}@example.com', 'PASS_NEW_${Math.floor(Math.random()*10000)}', '555-0000', '1995-10-15');`;
+         generatedSql = `INSERT INTO passenger(first_name, last_name, email, passport_no, phone, date_of_birth) VALUES('${nameMatch[1]}', '${nameMatch[2]}', '${nameMatch[1].toLowerCase()}_${Math.floor(Math.random()*10000)}@example.com', 'PASS_NEW_${Math.floor(Math.random()*10000)}', '555-0000', '1995-10-15'); `;
       } else {
          const singleMatch = prompt.match(/add (?:passenger|user)\s+([a-zA-Z]+)/i);
          if(singleMatch) {
-            generatedSql = `INSERT INTO passenger (first_name, last_name, email, passport_no, phone, date_of_birth) VALUES ('${singleMatch[1]}', 'User', '${singleMatch[1].toLowerCase()}_${Math.floor(Math.random()*10000)}@example.com', 'PASS_NEW_${Math.floor(Math.random()*10000)}', '555-1234', '1990-01-01');`;
+            generatedSql = `INSERT INTO passenger(first_name, last_name, email, passport_no, phone, date_of_birth) VALUES('${singleMatch[1]}', 'User', '${singleMatch[1].toLowerCase()}_${Math.floor(Math.random()*10000)}@example.com', 'PASS_NEW_${Math.floor(Math.random()*10000)}', '555-1234', '1990-01-01'); `;
          } else {
-            generatedSql = `INSERT INTO passenger (first_name, last_name, email, passport_no, phone, date_of_birth) VALUES ('New', 'Passenger', 'new_${Math.floor(Math.random()*10000)}@example.com', 'PASS_NEW_${Math.floor(Math.random()*10000)}', '555-1234', '1990-01-01');`;
+            generatedSql = `INSERT INTO passenger(first_name, last_name, email, passport_no, phone, date_of_birth) VALUES('New', 'Passenger', 'new_${Math.floor(Math.random()*10000)}@example.com', 'PASS_NEW_${Math.floor(Math.random()*10000)}', '555-1234', '1990-01-01'); `;
          }
       }
     }
     else if (lower.startsWith("delete passenger") || lower.startsWith("delete user")) {
       const match = prompt.match(/delete (?:passenger|user) (\d+)/i);
       if(match) {
-          generatedSql = `DELETE FROM passenger WHERE passenger_id = ${match[1]};`;
+          generatedSql = `DELETE FROM passenger WHERE passenger_id = ${ match[1] }; `;
       } else {
-          generatedSql = `DELETE FROM passenger ORDER BY passenger_id DESC LIMIT 1;`;
+          generatedSql = `DELETE FROM passenger ORDER BY passenger_id DESC LIMIT 1; `;
       }
     }
     else if (lower.includes("list all passenger") || lower.includes("show passengers")) {
@@ -212,33 +212,33 @@ app.post('/api/ai-query', async (req, res) => {
       const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
       
       const dbSchema = `
-        Table airline (airline_id, name, country)
-        Table aircraft (aircraft_id, airline_id, model, total_seats)
-        Table airport (airport_id, name, city, country)
-        Table flight (flight_id, airline_id, aircraft_id, source_airport_id, destination_airport_id, departure_time, arrival_time, status)
-        Table seat (seat_id, aircraft_id, seat_number, class, is_window)
-        Table passenger (passenger_id, first_name, last_name, email, passport_no, phone, date_of_birth)
-        Table booking (booking_id, passenger_id, booking_date, total_amount)
-        Table ticket (ticket_id, booking_id, flight_id, seat_id, price, status)
-        Table payment (payment_id, booking_id, method, amount, status)
-        Table pricing (pricing_id, flight_id, base_price, demand_factor, final_price)
-        Table crew (crew_id, name, role, flight_hours)
-        Table flight_crew (flight_id, crew_id)
-        Table system_user (user_id, email, password, permissions)
-        Table audit_log (audit_id, action_type, log_details, timestamp)
+        Table airline(airline_id, name, country)
+        Table aircraft(aircraft_id, airline_id, model, total_seats)
+        Table airport(airport_id, name, city, country)
+        Table flight(flight_id, airline_id, aircraft_id, source_airport_id, destination_airport_id, departure_time, arrival_time, status)
+        Table seat(seat_id, aircraft_id, seat_number, class, is_window)
+        Table passenger(passenger_id, first_name, last_name, email, passport_no, phone, date_of_birth)
+        Table booking(booking_id, passenger_id, booking_date, total_amount)
+        Table ticket(ticket_id, booking_id, flight_id, seat_id, price, status)
+        Table payment(payment_id, booking_id, method, amount, status)
+        Table pricing(pricing_id, flight_id, base_price, demand_factor, final_price)
+        Table crew(crew_id, name, role, flight_hours)
+        Table flight_crew(flight_id, crew_id)
+        Table system_user(user_id, email, password, permissions)
+        Table audit_log(audit_id, action_type, log_details, timestamp)
       `;
   
       const aiPrompt = `You are an expert SQL Translator for a MySQL database.
       User prompt: "${prompt}"
-      Schema: ${dbSchema}
-      
-      RULES:
-      - Translate intent perfectly into SQL.
-      - EXACT ENTITY MATCHING ONLY: ONLY generate SQL for the specific entities the user explicitly mentions. (e.g. If adding a passenger, strictly ONLY output the INSERT INTO passenger statement. Do absolutely NOT generate unrelated airlines, flights, airports, or bookings).
-      - If the user explicitly asks for complex multi-actions, write multiple statements separated by semicolon.
-      - Always assume generic data formatting if not fully specified (e.g., auto-generate a passport_no if none is provided).
-      - NEVER manually insert into AUTO_INCREMENT primary key columns (like passenger_id). The database handles them.
-      - RESPOND WITH ONLY THE RAW SQL STRING. Do not use block quotes or markdown.`;
+    Schema: ${ dbSchema }
+
+    RULES:
+    - Translate intent perfectly into SQL.
+      - EXACT ENTITY MATCHING ONLY: ONLY generate SQL for the specific entities the user explicitly mentions. (e.g.If adding a passenger, strictly ONLY output the INSERT INTO passenger statement.Do absolutely NOT generate unrelated airlines, flights, airports, or bookings).
+      - If the user explicitly asks for complex multi - actions, write multiple statements separated by semicolon.
+      - Always assume generic data formatting if not fully specified(e.g., auto - generate a passport_no if none is provided).
+      - NEVER manually insert into AUTO_INCREMENT primary key columns(like passenger_id).The database handles them.
+      - RESPOND WITH ONLY THE RAW SQL STRING.Do not use block quotes or markdown.`;
   
       const result = await groq.chat.completions.create({
         messages: [{ role: 'user', content: aiPrompt }],
@@ -246,66 +246,66 @@ app.post('/api/ai-query', async (req, res) => {
       });
       
       generatedSql = result.choices[0].message.content.trim();
-      generatedSql = generatedSql.replace(/^[`]*/g, '').replace(/sql\n/i, '').replace(/[`]*$/g, '').trim();
+      generatedSql = generatedSql.replace(/^[`]* /g, '').replace(/sql\n / i, '').replace(/[`]*$/g, '').trim();
     }
 
-    // Use a temp pool enabling multiple statements support just like voice routing
-    const tempPool = mysql.createPool({
-      host: process.env.DB_HOST || 'localhost',
-      user: process.env.DB_USER || 'root',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || 'aviation_db',
-      multipleStatements: true
-    });
-    
-    // RBAC Permission check
-    if (req.body.role === 'ADMIN' && /^(INSERT|UPDATE|DELETE|ALTER|DROP|CREATE)/i.test(generatedSql.trim())) {
-        return res.status(403).json({ error: 'Permission Denied: Standard ADMINs can only execute SELECT queries through AI logic.', sql: generatedSql });
-    }
-    
-    const [rows, fields] = await tempPool.query(generatedSql);
-    tempPool.end();
-    
-    // Auto Audit Mappings for Database Integrity tracking
-    if (/^(INSERT|UPDATE|DELETE|ALTER|DROP|CREATE)/i.test(generatedSql.trim())) {
-      const actionType = generatedSql.trim().split(' ')[0].toUpperCase();
-      await pool.query('INSERT INTO audit_log (action_type, log_details) VALUES (?, ?)', [
-        `AI_TEXT_GROQ_${actionType}`,
-        `Groq AI Engine translated text prompt '${prompt}' into action: ${generatedSql.substring(0, 150)}`
-      ]);
-    }
+// Use a temp pool enabling multiple statements support just like voice routing
+const tempPool = mysql.createPool({
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || '',
+  database: process.env.DB_NAME || 'aviation_db',
+  multipleStatements: true
+});
 
-    let columns = [];
-    let formattedRows = rows;
-    
-    // Handle multiple statement result Arrays
-    const resultToCheck = Array.isArray(rows) && !!rows[0] && Array.isArray(rows[0]) ? rows[rows.length - 1] : rows;
-    const fieldsToCheck = Array.isArray(fields) && !!fields[0] && Array.isArray(fields[0]) ? fields[fields.length - 1] : fields;
+// RBAC Permission check
+if (req.body.role === 'ADMIN' && /^(INSERT|UPDATE|DELETE|ALTER|DROP|CREATE)/i.test(generatedSql.trim())) {
+  return res.status(403).json({ error: 'Permission Denied: Standard ADMINs can only execute SELECT queries through AI logic.', sql: generatedSql });
+}
 
-    if (fieldsToCheck && Array.isArray(fieldsToCheck) && fieldsToCheck[0] && fieldsToCheck[0].name) {
-      columns = fieldsToCheck.map(f => ({ name: f.name, type: f.columnType }));
-      formattedRows = resultToCheck;
-    } else {
-      columns = [{ name: 'Rule_AI_Action', type: 253 }, { name: 'Affected_Rows', type: 3 }];
-      
-      let totalAffected = 0;
-      if (Array.isArray(rows)) {
-         rows.forEach(r => { if(r && r.affectedRows) totalAffected += r.affectedRows; });
-      } else if (rows && rows.affectedRows) {
-         totalAffected = rows.affectedRows;
-      }
-      formattedRows = [{ Rule_AI_Action: 'Command Executed Smoothly', Affected_Rows: totalAffected }];
-    }
-    
-    res.json({ sql: generatedSql, rows: formattedRows, columns });
-  } catch (error) { 
-    console.error("AI QUERY ERROR:", error.message);
-    const origin = isRuleMatched ? "Rule-Based Engine Framework" : "Llama-3 LLM Engine";
-    res.status(500).json({ 
-      error: error.message, 
-      sql: `Execution failed. Origin: ${origin}. Make sure your rules generate unique queries.\n\nFailing Statement:\n${generatedSql || 'None Generated'}` 
-    }); 
+const [rows, fields] = await tempPool.query(generatedSql);
+tempPool.end();
+
+// Auto Audit Mappings for Database Integrity tracking
+if (/^(INSERT|UPDATE|DELETE|ALTER|DROP|CREATE)/i.test(generatedSql.trim())) {
+  const actionType = generatedSql.trim().split(' ')[0].toUpperCase();
+  await pool.query('INSERT INTO audit_log (action_type, log_details) VALUES (?, ?)', [
+    `AI_TEXT_GROQ_${actionType}`,
+    `Groq AI Engine translated text prompt '${prompt}' into action: ${generatedSql.substring(0, 150)}`
+  ]);
+}
+
+let columns = [];
+let formattedRows = rows;
+
+// Handle multiple statement result Arrays
+const resultToCheck = Array.isArray(rows) && !!rows[0] && Array.isArray(rows[0]) ? rows[rows.length - 1] : rows;
+const fieldsToCheck = Array.isArray(fields) && !!fields[0] && Array.isArray(fields[0]) ? fields[fields.length - 1] : fields;
+
+if (fieldsToCheck && Array.isArray(fieldsToCheck) && fieldsToCheck[0] && fieldsToCheck[0].name) {
+  columns = fieldsToCheck.map(f => ({ name: f.name, type: f.columnType }));
+  formattedRows = resultToCheck;
+} else {
+  columns = [{ name: 'Rule_AI_Action', type: 253 }, { name: 'Affected_Rows', type: 3 }];
+
+  let totalAffected = 0;
+  if (Array.isArray(rows)) {
+    rows.forEach(r => { if (r && r.affectedRows) totalAffected += r.affectedRows; });
+  } else if (rows && rows.affectedRows) {
+    totalAffected = rows.affectedRows;
   }
+  formattedRows = [{ Rule_AI_Action: 'Command Executed Smoothly', Affected_Rows: totalAffected }];
+}
+
+res.json({ sql: generatedSql, rows: formattedRows, columns });
+  } catch (error) {
+  console.error("AI QUERY ERROR:", error.message);
+  const origin = isRuleMatched ? "Rule-Based Engine Framework" : "Llama-3 LLM Engine";
+  res.status(500).json({
+    error: error.message,
+    sql: `Execution failed. Origin: ${origin}. Make sure your rules generate unique queries.\n\nFailing Statement:\n${generatedSql || 'None Generated'}`
+  });
+}
 });
 
 app.post('/api/voice-query', upload.single('audio'), async (req, res) => {
@@ -315,19 +315,19 @@ app.post('/api/voice-query', upload.single('audio'), async (req, res) => {
       if (req.file) fs.unlinkSync(req.file.path);
       return res.status(400).json({ error: 'GROQ_API_KEY mapping missing in backend/.env', sql: 'ERROR' });
     }
-    
+
     const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-    
+
     // 1. Transcribe Audio using Whisper
     const transcription = await groq.audio.transcriptions.create({
       file: fs.createReadStream(req.file.path),
       model: 'whisper-large-v3',
     });
-    
+
     // Clean up the temp audio file
     fs.unlinkSync(req.file.path);
     const transcriptText = transcription.text;
-    
+
     // 2. Synthesize SQL via LLM for complex context rules
     const dbSchema = `
       Table airline (airline_id, name, country)
@@ -362,7 +362,7 @@ app.post('/api/voice-query', upload.single('audio'), async (req, res) => {
       messages: [{ role: 'user', content: aiPrompt }],
       model: 'llama-3.1-8b-instant'
     });
-    
+
     generatedSql = result.choices[0].message.content.trim();
     generatedSql = generatedSql.replace(/^[`]*/g, '').replace(/sql\n/i, '').replace(/[`]*$/g, '').trim();
 
@@ -375,15 +375,15 @@ app.post('/api/voice-query', upload.single('audio'), async (req, res) => {
       database: process.env.DB_NAME || 'aviation_db',
       multipleStatements: true
     });
-    
+
     // RBAC check
     if (req.body.role === 'ADMIN' && /^(INSERT|UPDATE|DELETE|ALTER|DROP|CREATE)/i.test(generatedSql.trim())) {
-        return res.status(403).json({ error: 'Permission Denied: Standard ADMINs can only execute SELECT queries through AI Voice logic.', sql: generatedSql });
+      return res.status(403).json({ error: 'Permission Denied: Standard ADMINs can only execute SELECT queries through AI Voice logic.', sql: generatedSql });
     }
-    
+
     const [rows, fields] = await tempPool.query(generatedSql);
     tempPool.end();
-    
+
     if (/^(INSERT|UPDATE|DELETE|ALTER|DROP|CREATE)/i.test(generatedSql.trim())) {
       const actionType = generatedSql.trim().split(' ')[0].toUpperCase();
       await pool.query('INSERT INTO audit_log (action_type, log_details) VALUES (?, ?)', [
@@ -394,7 +394,7 @@ app.post('/api/voice-query', upload.single('audio'), async (req, res) => {
 
     let columns = [];
     let formattedRows = rows;
-    
+
     // Handle multiple statement result Arrays
     const resultToCheck = Array.isArray(rows) && !!rows[0] && Array.isArray(rows[0]) ? rows[rows.length - 1] : rows;
     const fieldsToCheck = Array.isArray(fields) && !!fields[0] && Array.isArray(fields[0]) ? fields[fields.length - 1] : fields;
@@ -404,19 +404,19 @@ app.post('/api/voice-query', upload.single('audio'), async (req, res) => {
       formattedRows = resultToCheck;
     } else {
       columns = [{ name: 'Voice_AI_Action', type: 253 }, { name: 'Affected_Rows', type: 3 }];
-      
+
       let totalAffected = 0;
       if (Array.isArray(rows)) {
-         rows.forEach(r => { if(r && r.affectedRows) totalAffected += r.affectedRows; });
+        rows.forEach(r => { if (r && r.affectedRows) totalAffected += r.affectedRows; });
       } else if (rows && rows.affectedRows) {
-         totalAffected = rows.affectedRows;
+        totalAffected = rows.affectedRows;
       }
       formattedRows = [{ Voice_AI_Action: 'Voice Command Executed', Affected_Rows: totalAffected }];
     }
-    
+
     res.json({ sql: generatedSql, transcript: transcriptText, rows: formattedRows, columns });
   } catch (error) {
-    if (req.file) { try { fs.unlinkSync(req.file.path); } catch(err){} }
+    if (req.file) { try { fs.unlinkSync(req.file.path); } catch (err) { } }
     res.status(500).json({ error: error.message, sql: `Voice synthesis failed or SQL execution failed.\n\nFailing Statement:\n${generatedSql || 'None Generated'}` });
   }
 });
@@ -427,7 +427,7 @@ app.get('/api/seats/:flightId', async (req, res) => {
     const flightId = req.params.flightId;
     const [flights] = await pool.query(`SELECT aircraft_id FROM flight WHERE flight_id = ?`, [flightId]);
     if (flights.length === 0) return res.status(404).json({ error: 'Flight not found' });
-    
+
     const aircraftId = flights[0].aircraft_id;
     // Perform complex JOIN to identify which seats are currently occupied by TICKETS for this specific FLIGHT
     const [seats] = await pool.query(`
@@ -438,7 +438,7 @@ app.get('/api/seats/:flightId', async (req, res) => {
       WHERE s.aircraft_id = ?
       ORDER BY s.seat_id ASC
     `, [flightId, aircraftId]);
-    
+
     res.json(seats);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -467,7 +467,7 @@ app.post('/api/book-seat', async (req, res) => {
     // Using Hackathon ACID Stored Procedure
     await pool.query(`CALL ExecuteBookingTransaction(?, ?, ?, ?)`, [passengerId, flightId, seatId, amount]);
     res.json({ success: true, message: 'Booking completely successfully processed.' });
-  } catch(err) {
+  } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });

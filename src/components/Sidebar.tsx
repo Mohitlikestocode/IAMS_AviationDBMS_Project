@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 const Sidebar = () => {
   const location = useLocation();
 
+  const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
     { name: 'Database Tables', path: '/tables', icon: 'table_chart' },
     { name: 'SQL Console', path: '/sql', icon: 'terminal' },
