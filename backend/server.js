@@ -117,13 +117,13 @@ app.post('/api/query', async (req, res) => {
 
 app.post('/api/ai-query', async (req, res) => {
   let isRuleMatched = false;
+  let generatedSql = "";
   try {
     const { prompt } = req.body;
     if (!process.env.GROQ_API_KEY) {
       return res.status(400).json({ error: 'GROQ_API_KEY not found in backend/.env', sql: 'ERROR' });
     }
     
-    let generatedSql = "";
     isRuleMatched = true;
     const lower = prompt.toLowerCase();
     
