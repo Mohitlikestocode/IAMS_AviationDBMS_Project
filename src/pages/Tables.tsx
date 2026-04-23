@@ -282,9 +282,6 @@ const Tables = () => {
             </div>
           </div>
         )}
-            </div>
-          </div>
-        </section>
       </main>
     </React.Fragment>
   );
