@@ -160,9 +160,6 @@ app.post('/api/ai-query', async (req, res) => {
   let generatedSql = "";
   try {
     const { prompt } = req.body;
-    if (!process.env.GROQ_API_KEY) {
-      return res.status(400).json({ error: 'GROQ_API_KEY not found in backend/.env', sql: 'ERROR' });
-    }
     
     isRuleMatched = true;
     const lower = prompt.toLowerCase();
@@ -209,6 +206,9 @@ app.post('/api/ai-query', async (req, res) => {
     }
 
     if (!isRuleMatched) {
+      if (!process.env.GROQ_API_KEY) {
+        return res.status(400).json({ error: 'GROQ_API_KEY not found in backend/.env', sql: 'ERROR' });
+      }
       const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
       
       const dbSchema = `
