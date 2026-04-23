@@ -26,7 +26,7 @@ app.get('/api/tables/:name', async (req, res) => {
   try {
     const { name } = req.params;
     if (!/^[a-zA-Z0-9_]+$/.test(name)) return res.status(400).json({ error: 'Invalid table name' });
-    const [rows, fields] = await pool.query(`SELECT * FROM \`${name}\` LIMIT 100`);
+    const [rows, fields] = await pool.query(`SELECT * FROM \`${name}\` ORDER BY 1 DESC LIMIT 150`);
     const columns = fields.map(f => ({ name: f.name, type: f.columnType }));
     res.json({ rows, columns });
   } catch (error) { res.status(500).json({ error: error.message }); }
