@@ -42,8 +42,8 @@ const generateSeats = () => {
 
 const generatePassengers = () => {
   const passengers = [];
-  // Generating 1000 passengers
-  for (let i = 1; i <= 1000; i++) {
+  // Generating 100 passengers
+  for (let i = 1; i <= 100; i++) {
     passengers.push(`('John_${i}', 'Doe', 'john.doe${i}@example.com', 'PASS${100000 + i}', '+1800555${(1000 + i).toString().slice(-4)}', '1990-01-01')`);
   }
   return passengers.join(',');
@@ -51,8 +51,8 @@ const generatePassengers = () => {
 
 const generateBookings = () => {
   const bookings = [];
-  for (let i = 1; i <= 800; i++) {
-    const passn = (i % 1000) + 1;
+  for (let i = 1; i <= 100; i++) {
+    const passn = (i % 100) + 1;
     bookings.push(`(${passn}, '2026-04-${10 + (i % 8)} 00:00:00', ${(Math.random() * 1000 + 200).toFixed(2)})`);
   }
   return bookings.join(',');
@@ -60,8 +60,8 @@ const generateBookings = () => {
 
 const generateTickets = () => {
   const tickets = [];
-  // Linking Booking (1..800), Flight (1..100) and Seat (1..800)
-  for (let i = 1; i <= 800; i++) {
+  // Linking Booking (1..100), Flight (1..100) and Seat (1..100)
+  for (let i = 1; i <= 100; i++) {
     tickets.push(`(${i}, ${(i % 100) + 1}, ${i}, ${(Math.random() * 800 + 200).toFixed(2)}, 'Confirmed')`);
   }
   return tickets.join(',');
@@ -70,7 +70,7 @@ const generateTickets = () => {
 const generatePayments = () => {
   const payments = [];
   const methods = ['Credit Card', 'PayPal', 'Crypto', 'Debit Card'];
-  for (let i = 1; i <= 800; i++) { // 1 to 1 relation with booking
+  for (let i = 1; i <= 100; i++) { // 1 to 1 relation with booking
     payments.push(`(${i}, '${methods[i % 4]}', ${(Math.random() * 1000 + 200).toFixed(2)}, 'Completed')`);
   }
   return payments.join(',');

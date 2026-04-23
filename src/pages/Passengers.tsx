@@ -14,7 +14,7 @@ const Passengers = () => {
       const res = await fetch('http://localhost:5000/api/query', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sql: "SELECT * FROM passenger LIMIT 10" })
+        body: JSON.stringify({ sql: "SELECT * FROM passenger ORDER BY passenger_id DESC LIMIT 100" })
       });
       const data = await res.json();
       setPassengers(data.rows || []);
@@ -26,15 +26,17 @@ const Passengers = () => {
   };
 
   const handleAddPassenger = () => {
-    const name = window.prompt("Enter Passenger Name:");
-    if (!name) return;
+    const fn = window.prompt("Enter First Name:");
+    if (!fn) return;
+    const ln = window.prompt("Enter Last Name:");
+    const email = window.prompt("Enter Email:");
     const passport = window.prompt("Enter Passport Number:");
     const phone = window.prompt("Enter Phone Number:");
     
     fetch(`http://localhost:5000/api/query`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sql: `INSERT INTO passenger (name, passport_no, phone) VALUES ('${name}', '${passport}', '${phone}')` })
+      body: JSON.stringify({ sql: `INSERT INTO passenger (first_name, last_name, email, passport_no, phone, date_of_birth) VALUES ('${fn}', '${ln}', '${email}', '${passport}', '${phone}', '1990-01-01')` })
     }).then(() => {
       alert("Passenger added successfully!");
       fetchPassengers();
@@ -109,14 +111,16 @@ const Passengers = () => {
                     </div>
                     <div className="col-span-3 flex items-center gap-3">
                       <div className="flex flex-col">
-                        <span className="text-sm font-semibold text-on-surface">{p.name}</span>
+                        <span className="text-sm font-semibold text-on-surface">{p.first_name} {p.last_name}</span>
+                        <span className="text-[10px] text-slate-500">{p.email}</span>
                       </div>
                     </div>
                     <div className="col-span-3 flex flex-col">
                       <span className="text-[11px] text-slate-500">{p.phone}</span>
                     </div>
-                    <div className="col-span-3">
+                    <div className="col-span-3 flex flex-col">
                       <span className="text-sm text-on-surface-variant font-mono">{p.passport_no}</span>
+                      <span className="text-[10px] text-slate-500">DOB: {new Date(p.date_of_birth).toLocaleDateString()}</span>
                     </div>
                     <div className="col-span-1 flex justify-end opacity-0 group-hover:opacity-100 transition-opacity">
                       <button onClick={(e) => { e.stopPropagation(); handleDelete(p.passenger_id); }} className="p-1 hover:text-error hover:bg-white/10 rounded">
