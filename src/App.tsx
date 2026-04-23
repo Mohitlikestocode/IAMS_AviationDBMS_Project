@@ -45,7 +45,7 @@ function App() {
         <Route path="/version-control" element={<ProtectedRoute><AppLayout><VersionControl /></AppLayout></ProtectedRoute>} />
         
         {/* Default route */}
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/" element={<Navigate to="/auth" replace />} />
       </Routes>
     </Router>
   );
