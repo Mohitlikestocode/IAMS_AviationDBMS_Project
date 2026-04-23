@@ -118,103 +118,89 @@ app.post('/api/query', async (req, res) => {
 app.post('/api/ai-query', async (req, res) => {
   try {
     const { prompt } = req.body;
-    const lower = prompt.toLowerCase();
+    if (!process.env.GROQ_API_KEY) {
+      return res.status(400).json({ error: 'GROQ_API_KEY not found in backend/.env', sql: 'ERROR' });
+    }
     
-    let generatedSql = "";
+    // Fall back to rule-based for specific fast mutations to keep presentation snappy, 
+    // but use Groq for everything else (like "Show me tables who's destination airport is 4")
+    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
     
-    // NATIVE AI RULE ENGINE: Matches intent flexibly
-    if (lower.includes("active flight")) {
-      generatedSql = "SELECT * FROM flight WHERE status = 'Active';";
-    } else if (lower.includes("more than 500 flight hour") || lower.includes("500") || lower.includes("pilot")) {
-      generatedSql = "SELECT name, role FROM crew WHERE role = 'Pilot';";
-    } else if (lower.includes("delhi to mumbai")) {
-      generatedSql = "SELECT f.* FROM flight f JOIN airport a1 ON f.source_airport_id = a1.airport_id JOIN airport a2 ON f.destination_airport_id = a2.airport_id WHERE a1.city = 'Delhi' AND a2.city = 'Mumbai';";
-    } else if (lower.includes("list all passenger") || lower.includes("show passengers")) {
-      generatedSql = "SELECT passenger_id, name, passport_no, phone FROM passenger;";
-    } else if (lower.includes("total revenue")) {
-      generatedSql = "SELECT SUM(amount) as total_revenue FROM payment WHERE status = 'Completed';";
-    } else if (lower.includes("revenue per flight")) {
-      generatedSql = "SELECT f.flight_id, SUM(p.amount) as flight_revenue FROM flight f JOIN ticket t ON f.flight_id = t.flight_id JOIN booking b ON t.booking_id = b.booking_id JOIN payment p ON b.booking_id = p.booking_id GROUP BY f.flight_id;";
-    } else if (lower.includes("delayed flight")) {
-      generatedSql = "SELECT * FROM flight WHERE status = 'Delayed';";
-    } else if (lower.includes("list all aircraft") || lower.includes("show aircrafts")) {
-      generatedSql = "SELECT aircraft_id, model, total_seats FROM aircraft;";
-    } else if (lower.includes("counts per flight") || lower.includes("passenger count")) {
-      generatedSql = "SELECT f.flight_id, COUNT(t.ticket_id) as total_passengers FROM flight f LEFT JOIN ticket t ON f.flight_id = t.flight_id GROUP BY f.flight_id;";
-    } else if (lower.includes("john doe")) {
-      generatedSql = "SELECT b.booking_id, b.booking_date, b.total_amount FROM booking b JOIN passenger p ON b.passenger_id = p.passenger_id WHERE p.name LIKE '%John%';";
-    } 
-    // MUTATION RECOGNITION ENGINES
-    else if (lower.startsWith("add passenger") || lower.startsWith("add user")) {
-      const nameMatch = prompt.match(/add (?:passenger|user)\s+(.+)/i);
-      if(nameMatch) {
-         generatedSql = `INSERT INTO passenger (name, passport_no, phone) VALUES ('${nameMatch[1].trim()}', 'PASS_NEW_${Math.floor(Math.random()*1000)}', '555-0000');`;
-      } else {
-         generatedSql = "INSERT INTO passenger (name, passport_no, phone) VALUES ('New Passenger', 'PASS_NEW', '555-1234');";
-      }
-    }
-    else if (lower.startsWith("delete passenger") || lower.startsWith("delete user")) {
-      const match = prompt.match(/delete (?:passenger|user) (\d+)/i);
-      if(match) {
-          generatedSql = `DELETE FROM passenger WHERE passenger_id = ${match[1]};`;
-      } else {
-          generatedSql = `DELETE FROM passenger ORDER BY passenger_id DESC LIMIT 1;`;
-      }
-    }
-    else if (lower.startsWith("change flight") || lower.startsWith("update flight")) {
-      const match = prompt.match(/(?:update|change) flight (\d+) to ([a-zA-Z]+)/i);
-      if(match) {
-          const newStatus = match[2].charAt(0).toUpperCase() + match[2].slice(1).toLowerCase();
-          generatedSql = `UPDATE flight SET status = '${newStatus}' WHERE flight_id = ${match[1]};`;
-      } else {
-          generatedSql = `UPDATE flight SET status = 'Delayed' WHERE flight_id = 1;`;
-      }
-    }
-    else if (lower.startsWith("add aircraft")) {
-       generatedSql = `INSERT INTO aircraft (airline_id, model, total_seats) VALUES (1, 'Boeing 737 Max', 180);`;
-    }
-    else if (lower.startsWith("add flight")) {
-       generatedSql = `INSERT INTO flight (airline_id, aircraft_id, source_airport_id, destination_airport_id, departure_time, arrival_time, status) VALUES (1, 1, 1, 2, NOW(), NOW(), 'Active');`;
-    }
-    else if (lower.includes("insert") || lower.includes("update") || lower.includes("delete")) {
-      if (lower.startsWith("insert") || lower.startsWith("update") || lower.startsWith("delete")) {
-         generatedSql = prompt; 
-      } else {
-         generatedSql = "SELECT * FROM flight LIMIT 10;";
-      }
-    }
-    else if (lower.includes("tables") || lower.includes("schema")) {
-      generatedSql = "SHOW TABLES;";
-    }
-    else {
-      generatedSql = "SELECT * FROM flight LIMIT 10;";
-    }
+    const dbSchema = `
+      Table airline (airline_id, name, country)
+      Table aircraft (aircraft_id, airline_id, model, total_seats)
+      Table airport (airport_id, name, city, country)
+      Table flight (flight_id, airline_id, aircraft_id, source_airport_id, destination_airport_id, departure_time, arrival_time, status)
+      Table seat (seat_id, aircraft_id, seat_number, class, is_window)
+      Table passenger (passenger_id, name, passport_no, phone)
+      Table booking (booking_id, passenger_id, booking_date, total_amount)
+      Table ticket (ticket_id, booking_id, flight_id, seat_id, price, status)
+      Table payment (payment_id, booking_id, method, amount, status)
+      Table pricing (pricing_id, flight_id, base_price, demand_factor, final_price)
+      Table crew (crew_id, name, role)
+      Table flight_crew (flight_id, crew_id)
+      Table system_user (user_id, email, password, permissions)
+      Table audit_log (audit_id, action_type, log_details, timestamp)
+    `;
 
-    const [rows, fields] = await pool.query(generatedSql);
+    const aiPrompt = `You are an expert SQL Translator for a MySQL database.
+    User prompt: "${prompt}"
+    Schema: ${dbSchema}
+    
+    RULES:
+    - Translate intent perfectly into SQL.
+    - If the user asks for multi-insert or complex actions (e.g. adding a user AND a ticket), write multiple statements separated by semicolon.
+    - Always assume generic data formatting if not fully specified (e.g. if they say "add passenger Mohit", use 'Mohit' for name, logic for other fields).
+    - RESPOND WITH ONLY THE RAW SQL STRING. Do not use block quotes or markdown.`;
+
+    const result = await groq.chat.completions.create({
+      messages: [{ role: 'user', content: aiPrompt }],
+      model: 'llama3-8b-8192'
+    });
+    
+    let generatedSql = result.choices[0].message.content.trim();
+    generatedSql = generatedSql.replace(/^[`]*/g, '').replace(/sql\n/i, '').replace(/[`]*$/g, '').trim();
+
+    // Use a temp pool enabling multiple statements support just like voice routing
+    const tempPool = mysql.createPool({
+      host: process.env.DB_HOST || 'localhost',
+      user: process.env.DB_USER || 'root',
+      password: process.env.DB_PASSWORD || '',
+      database: process.env.DB_NAME || 'aviation_db',
+      multipleStatements: true
+    });
+    
+    const [rows, fields] = await tempPool.query(generatedSql);
+    tempPool.end();
     
     // Auto Audit Mappings for Database Integrity tracking
     if (/^(INSERT|UPDATE|DELETE|ALTER|DROP|CREATE)/i.test(generatedSql.trim())) {
       const actionType = generatedSql.trim().split(' ')[0].toUpperCase();
       await pool.query('INSERT INTO audit_log (action_type, log_details) VALUES (?, ?)', [
-        `AI_${actionType}`,
-        `AI Engine translated prompt '${prompt}' into action: ${generatedSql.substring(0, 150)}`
+        `AI_TEXT_GROQ_${actionType}`,
+        `Groq AI Engine translated text prompt '${prompt}' into action: ${generatedSql.substring(0, 150)}`
       ]);
     }
 
     let columns = [];
     let formattedRows = rows;
-    if (fields) {
-      columns = fields.map(f => ({ name: f.name, type: f.columnType }));
+    
+    // Handle multiple statement result Arrays
+    const resultToCheck = Array.isArray(rows) && Array.isArray(rows[0]) ? rows[rows.length - 1] : rows;
+    const fieldsToCheck = Array.isArray(fields) && Array.isArray(fields[0]) ? fields[fields.length - 1] : fields;
+
+    if (fieldsToCheck) {
+      columns = fieldsToCheck.map(f => ({ name: f.name, type: f.columnType }));
+      formattedRows = resultToCheck;
     } else {
       columns = [{ name: 'Rule_AI_Action', type: 253 }, { name: 'Affected_Rows', type: 3 }];
-      formattedRows = [{ Rule_AI_Action: 'Command Executed Smoothly', Affected_Rows: rows.affectedRows || 0 }];
+      formattedRows = [{ Rule_AI_Action: 'Command Executed Smoothly', Affected_Rows: resultToCheck.affectedRows || 0 }];
     }
     
     res.json({ sql: generatedSql, rows: formattedRows, columns });
   } catch (error) { 
-    // We can't log generatedSql directly because the error might occur BEFORE it is fully processed.
     console.error("AI QUERY ERROR:", error.message);
-    res.status(500).json({ error: error.message, sql: "Syntax error or Schema mismatch." }); 
+    res.status(500).json({ error: error.message, sql: "Syntax error or Schema mismatch generated by LLM." }); 
   }
 });
 
