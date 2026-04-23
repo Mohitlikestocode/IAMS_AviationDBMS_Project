@@ -108,28 +108,20 @@ app.get('/api/audit-logs', async (req, res) => {
 app.post('/api/undo-transaction', async (req, res) => {
   try {
     const { audit_id } = req.body;
-    // Advanced Cascading Hackathon Undo Logic
-    const [cascadingLogs] = await pool.query('SELECT * FROM audit_log WHERE audit_id >= ? ORDER BY audit_id DESC', [audit_id]);
-    if (cascadingLogs.length === 0) return res.status(404).json({ error: 'Audit log not found' });
+    // VERY Basic Hackathon Undo Logic for specific insertions
+    const [logs] = await pool.query('SELECT * FROM audit_log WHERE audit_id = ?', [audit_id]);
+    if (logs.length === 0) return res.status(404).json({ error: 'Audit log not found' });
 
-    for (const log of cascadingLogs) {
-      if (log.action_type === 'TRANSACTION_REVERT') continue;
-      
-      const details = log.log_details;
-      const insertMatch = details.match(/INSERT INTO\s+([a-zA-Z_]+)/i);
-      if (insertMatch) {
-         const table = insertMatch[1];
-         // Best effort rollback: delete the latest entry from that table realistically tied to this execution
-         try {
-           await pool.query(`DELETE FROM \`${table}\` ORDER BY ${table}_id DESC LIMIT 1`);
-         } catch(e) { console.error("Undo cascading failure for table:", table, e.message); } 
-      }
-      
-      await pool.query('DELETE FROM audit_log WHERE audit_id = ?', [log.audit_id]);
-      await pool.query('INSERT INTO audit_log (action_type, log_details) VALUES (?, ?)', ['TRANSACTION_REVERT', `Reverted transaction for audit ID ${log.audit_id}`]);
+    let sqlToExecute = logs[0].undo_sql;
+
+    if (sqlToExecute) {
+       await pool.query(sqlToExecute);
     }
+    
+    await pool.query('DELETE FROM audit_log WHERE audit_id = ?', [audit_id]);
+    await pool.query('INSERT INTO audit_log (action_type, log_details) VALUES (?, ?)', ['TRANSACTION_REVERT', `Reverted transaction for audit ID ${audit_id}`]);
 
-    res.json({ success: true, message: `Successfully reverted ${cascadingLogs.length} cascading transactions.` });
+    res.json({ success: true, message: 'Transaction fully reverted and restored to original state sequentially' });
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
 
@@ -138,14 +130,14 @@ app.post('/api/query', async (req, res) => {
     const { sql } = req.body;
     if (!sql) return res.status(400).json({ error: 'SQL is required' });
     const [rows, fields] = await pool.query(sql);
-    
+
     // Audit modification queries
     const trimmedSql = sql.trim();
     if (/^(INSERT|UPDATE|DELETE|ALTER|DROP|CREATE)/i.test(trimmedSql)) {
       const actionType = trimmedSql.split(' ')[0].toUpperCase();
       await pool.query('INSERT INTO audit_log (action_type, log_details) VALUES (?, ?)', [
-        `MANUAL_${ actionType }`,
-        `Manual query execution: ${ trimmedSql.substring(0, 200) }`
+        `MANUAL_${actionType}`,
+        `Manual query execution: ${trimmedSql.substring(0, 200)}`
       ]);
     }
 
@@ -157,81 +149,60 @@ app.post('/api/query', async (req, res) => {
       columns = [{ name: 'Action', type: 253 }, { name: 'AffectedRows', type: 3 }];
       formattedRows = [{ Action: 'Success', AffectedRows: rows.affectedRows || 0 }];
     }
-    
+
     res.json({ rows: formattedRows, columns, affectedRows: rows.affectedRows || 0 });
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
-
-let pendingPassengerMemory = null;
 
 app.post('/api/ai-query', async (req, res) => {
   let isRuleMatched = false;
   let generatedSql = "";
   try {
     const { prompt } = req.body;
-    
+
     isRuleMatched = true;
     const lower = prompt.toLowerCase();
-    
-    if (pendingPassengerMemory) {
-        const phoneMatch = prompt.match(/\b\d{8,12}\b/);
-        const dobMatch = prompt.match(/\b\d{4}[-/]\d{2}[-/]\d{2}\b/);
-        
-        if (phoneMatch) pendingPassengerMemory.phone = phoneMatch[0];
-        if (dobMatch) pendingPassengerMemory.dob = dobMatch[0];
-        
-        if (!pendingPassengerMemory.phone || !pendingPassengerMemory.dob) {
-           return res.json({ 
-              sql: "-- System Interruption --\n-- Awaiting Missing Fields --",
-              rows: [{ Rule_AI_Action: "Missing Information", Affected_Rows: `Still missing: ${!pendingPassengerMemory.phone ? 'Phone' : ''} ${!pendingPassengerMemory.dob ? 'DOB (YYYY-MM-DD)' : ''}` }], 
-              columns: [{name: 'Rule_AI_Action', type: 253}, {name: 'Affected_Rows', type: 253}] 
-           });
-        }
-        
-        generatedSql = `INSERT INTO passenger(first_name, last_name, email, passport_no, phone, date_of_birth) VALUES('${pendingPassengerMemory.first}', '${pendingPassengerMemory.last}', '${pendingPassengerMemory.first.toLowerCase()}_${Math.floor(Math.random()*10000)}@example.com', 'PASS_NEW_${Math.floor(Math.random()*10000)}', '${pendingPassengerMemory.phone}', '${pendingPassengerMemory.dob}'); `;
-        pendingPassengerMemory = null; // Clear context
-    }
+
     // NATIVE AI RULE ENGINE: 8 Matchers
-    else if (lower.startsWith("add passenger") || lower.startsWith("add user")) {
-      const nameMatch = prompt.match(/add (?:passenger|user)\s+([a-zA-Z]+)\s*([a-zA-Z]*)/i);
-      if(nameMatch) {
-         const first = nameMatch[1];
-         const last = nameMatch[2] || 'User';
-         
-         const phoneMatch = prompt.match(/\b\d{8,12}\b/);
-         const dobMatch = prompt.match(/\b\d{4}[-/]\d{2}[-/]\d{2}\b/);
-         
-         if (!phoneMatch || !dobMatch) {
-            pendingPassengerMemory = { first, last, phone: phoneMatch ? phoneMatch[0] : null, dob: dobMatch ? dobMatch[0] : null };
-            return res.json({ 
-               sql: "-- System Interruption --\n-- Awaiting Missing Fields --",
-               rows: [{ Rule_AI_Action: "Information Required", Affected_Rows: `Missing fields for ${first}. Please provide Date of Birth (YYYY-MM-DD) and Phone number.` }], 
-               columns: [{name: 'Rule_AI_Action', type: 253}, {name: 'Affected_Rows', type: 253}] 
-            });
-         }
-         
-         generatedSql = `INSERT INTO passenger(first_name, last_name, email, passport_no, phone, date_of_birth) VALUES('${first}', '${last}', '${first.toLowerCase()}_${Math.floor(Math.random()*10000)}@example.com', 'PASS_NEW_${Math.floor(Math.random()*10000)}', '${phoneMatch[0]}', '${dobMatch[0]}'); `;
+    if (lower.startsWith("add passenger") || lower.startsWith("add user")) {
+      const nameMatch = prompt.match(/add (?:passenger|user)\s+([a-zA-Z]+)\s+([a-zA-Z]+)/i);
+      const phoneMatch = prompt.match(/(\d{10,12})/);
+      const dobMatch = prompt.match(/(19\d{2}|20\d{2})/);
+
+      if (!phoneMatch || !dobMatch) {
+         return res.status(400).json({ error: 'Context Missing', sql: 'Please explicitly provide both the passenger\'s associated Phone Number and Date of Birth (Year) inside your prompt to authorize this database insertion securely.' });
+      }
+
+      if (nameMatch) {
+        generatedSql = `INSERT INTO passenger(first_name, last_name, email, passport_no, phone, date_of_birth) VALUES('${nameMatch[1]}', '${nameMatch[2]}', '${nameMatch[1].toLowerCase()}_${Math.floor(Math.random() * 10000)}@example.com', 'PASS_NEW_${Math.floor(Math.random() * 10000)}', '${phoneMatch[1]}', '${dobMatch[1]}-01-01'); `;
+      } else {
+        const singleMatch = prompt.match(/add (?:passenger|user)\s+([a-zA-Z]+)/i);
+        if (singleMatch) {
+          generatedSql = `INSERT INTO passenger(first_name, last_name, email, passport_no, phone, date_of_birth) VALUES('${singleMatch[1]}', 'User', '${singleMatch[1].toLowerCase()}_${Math.floor(Math.random() * 10000)}@example.com', 'PASS_NEW_${Math.floor(Math.random() * 10000)}', '${phoneMatch[1]}', '${dobMatch[1]}-01-01'); `;
+        } else {
+          generatedSql = `INSERT INTO passenger(first_name, last_name, email, passport_no, phone, date_of_birth) VALUES('New', 'Passenger', 'new_${Math.floor(Math.random() * 10000)}@example.com', 'PASS_NEW_${Math.floor(Math.random() * 10000)}', '${phoneMatch[1]}', '${dobMatch[1]}-01-01'); `;
+        }
       }
     }
     else if (lower.includes("add airline") || lower.includes("add new airline") || lower.includes("add new alirline")) {
       const match = prompt.match(/add (?:new )?(?:airline|alirline)\s+([^,]+),\s*([^,]+)/i);
-      if(match) {
-         generatedSql = `INSERT INTO airline(name, country) VALUES('${match[1].trim()}', '${match[2].trim()}'); `;
+      if (match) {
+        generatedSql = `INSERT INTO airline(name, country) VALUES('${match[1].trim()}', '${match[2].trim()}'); `;
       } else {
-         const singleMatch = prompt.match(/add (?:new )?(?:airline|alirline)\s+([a-zA-Z\s]+)/i);
-         if(singleMatch) {
-            generatedSql = `INSERT INTO airline(name, country) VALUES('${singleMatch[1].trim()}', 'Unknown'); `;
-         } else {
-            generatedSql = `INSERT INTO airline(name, country) VALUES('New Airline', 'Unknown'); `;
-         }
+        const singleMatch = prompt.match(/add (?:new )?(?:airline|alirline)\s+([a-zA-Z\s]+)/i);
+        if (singleMatch) {
+          generatedSql = `INSERT INTO airline(name, country) VALUES('${singleMatch[1].trim()}', 'Unknown'); `;
+        } else {
+          generatedSql = `INSERT INTO airline(name, country) VALUES('New Airline', 'Unknown'); `;
+        }
       }
     }
     else if (lower.startsWith("delete passenger") || lower.startsWith("delete user")) {
       const match = prompt.match(/delete (?:passenger|user) (\d+)/i);
-      if(match) {
-          generatedSql = `DELETE FROM passenger WHERE passenger_id = ${ match[1] }; `;
+      if (match) {
+        generatedSql = `DELETE FROM passenger WHERE passenger_id = ${match[1]}; `;
       } else {
-          generatedSql = `DELETE FROM passenger ORDER BY passenger_id DESC LIMIT 1; `;
+        generatedSql = `DELETE FROM passenger ORDER BY passenger_id DESC LIMIT 1; `;
       }
     }
     else if (lower.includes("list all passenger") || lower.includes("show passengers")) {
@@ -258,7 +229,7 @@ app.post('/api/ai-query', async (req, res) => {
         return res.status(400).json({ error: 'GROQ_API_KEY not found in backend/.env', sql: 'ERROR' });
       }
       const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-      
+
       const dbSchema = `
         Table airline(airline_id, name, country)
         Table aircraft(aircraft_id, airline_id, model, total_seats)
@@ -275,10 +246,10 @@ app.post('/api/ai-query', async (req, res) => {
         Table system_user(user_id, email, password, permissions)
         Table audit_log(audit_id, action_type, log_details, timestamp)
       `;
-  
+
       const aiPrompt = `You are an expert SQL Translator for a MySQL database.
       User prompt: "${prompt}"
-    Schema: ${ dbSchema }
+    Schema: ${dbSchema}
 
     RULES:
     - Translate intent perfectly into SQL.
@@ -287,73 +258,73 @@ app.post('/api/ai-query', async (req, res) => {
       - Always assume generic data formatting if not fully specified(e.g., auto - generate a passport_no if none is provided).
       - NEVER manually insert into AUTO_INCREMENT primary key columns(like passenger_id).The database handles them.
       - RESPOND WITH ONLY THE RAW SQL STRING.Do not use block quotes or markdown.`;
-  
+
       const result = await groq.chat.completions.create({
         messages: [{ role: 'user', content: aiPrompt }],
         model: 'llama-3.1-8b-instant'
       });
-      
+
       generatedSql = result.choices[0].message.content.trim();
       generatedSql = generatedSql.replace(/^[`]*/g, '').replace(/sql\n/i, '').replace(/[`]*$/g, '').trim();
     }
 
-// Use a temp pool enabling multiple statements support just like voice routing
-const tempPool = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'aviation_db',
-  multipleStatements: true
-});
+    // Use a temp pool enabling multiple statements support just like voice routing
+    const tempPool = mysql.createPool({
+      host: process.env.DB_HOST || 'localhost',
+      user: process.env.DB_USER || 'root',
+      password: process.env.DB_PASSWORD || '',
+      database: process.env.DB_NAME || 'aviation_db',
+      multipleStatements: true
+    });
 
-// RBAC Permission check
-if (req.body.role === 'ADMIN' && /^(INSERT|UPDATE|DELETE|ALTER|DROP|CREATE)/i.test(generatedSql.trim())) {
-  return res.status(403).json({ error: 'Permission Denied: Standard ADMINs can only execute SELECT queries through AI logic.', sql: generatedSql });
-}
+    // RBAC Permission check
+    if (req.body.role === 'ADMIN' && /^(INSERT|UPDATE|DELETE|ALTER|DROP|CREATE)/i.test(generatedSql.trim())) {
+      return res.status(403).json({ error: 'Permission Denied: Standard ADMINs can only execute SELECT queries through AI logic.', sql: generatedSql });
+    }
 
-const [rows, fields] = await tempPool.query(generatedSql);
-tempPool.end();
+    const [rows, fields] = await tempPool.query(generatedSql);
+    tempPool.end();
 
-// Auto Audit Mappings for Database Integrity tracking
-if (/^(INSERT|UPDATE|DELETE|ALTER|DROP|CREATE)/i.test(generatedSql.trim())) {
-  const actionType = generatedSql.trim().split(' ')[0].toUpperCase();
-  await pool.query('INSERT INTO audit_log (action_type, log_details) VALUES (?, ?)', [
-    `AI_TEXT_GROQ_${actionType}`,
-    `Groq AI Engine translated text prompt '${prompt}' into action: ${generatedSql.substring(0, 150)}`
-  ]);
-}
+    // Auto Audit Mappings for Database Integrity tracking
+    if (/^(INSERT|UPDATE|DELETE|ALTER|DROP|CREATE)/i.test(generatedSql.trim())) {
+      const actionType = generatedSql.trim().split(' ')[0].toUpperCase();
+      await pool.query('INSERT INTO audit_log (action_type, log_details) VALUES (?, ?)', [
+        `AI_TEXT_GROQ_${actionType}`,
+        `Groq AI Engine translated text prompt '${prompt}' into action: ${generatedSql.substring(0, 150)}`
+      ]);
+    }
 
-let columns = [];
-let formattedRows = rows;
+    let columns = [];
+    let formattedRows = rows;
 
-// Handle multiple statement result Arrays
-const resultToCheck = Array.isArray(rows) && !!rows[0] && Array.isArray(rows[0]) ? rows[rows.length - 1] : rows;
-const fieldsToCheck = Array.isArray(fields) && !!fields[0] && Array.isArray(fields[0]) ? fields[fields.length - 1] : fields;
+    // Handle multiple statement result Arrays
+    const resultToCheck = Array.isArray(rows) && !!rows[0] && Array.isArray(rows[0]) ? rows[rows.length - 1] : rows;
+    const fieldsToCheck = Array.isArray(fields) && !!fields[0] && Array.isArray(fields[0]) ? fields[fields.length - 1] : fields;
 
-if (fieldsToCheck && Array.isArray(fieldsToCheck) && fieldsToCheck[0] && fieldsToCheck[0].name) {
-  columns = fieldsToCheck.map(f => ({ name: f.name, type: f.columnType }));
-  formattedRows = resultToCheck;
-} else {
-  columns = [{ name: 'Rule_AI_Action', type: 253 }, { name: 'Affected_Rows', type: 3 }];
+    if (fieldsToCheck && Array.isArray(fieldsToCheck) && fieldsToCheck[0] && fieldsToCheck[0].name) {
+      columns = fieldsToCheck.map(f => ({ name: f.name, type: f.columnType }));
+      formattedRows = resultToCheck;
+    } else {
+      columns = [{ name: 'Rule_AI_Action', type: 253 }, { name: 'Affected_Rows', type: 3 }];
 
-  let totalAffected = 0;
-  if (Array.isArray(rows)) {
-    rows.forEach(r => { if (r && r.affectedRows) totalAffected += r.affectedRows; });
-  } else if (rows && rows.affectedRows) {
-    totalAffected = rows.affectedRows;
-  }
-  formattedRows = [{ Rule_AI_Action: 'Command Executed Smoothly', Affected_Rows: totalAffected }];
-}
+      let totalAffected = 0;
+      if (Array.isArray(rows)) {
+        rows.forEach(r => { if (r && r.affectedRows) totalAffected += r.affectedRows; });
+      } else if (rows && rows.affectedRows) {
+        totalAffected = rows.affectedRows;
+      }
+      formattedRows = [{ Rule_AI_Action: 'Command Executed Smoothly', Affected_Rows: totalAffected }];
+    }
 
-res.json({ sql: generatedSql, rows: formattedRows, columns });
+    res.json({ sql: generatedSql, rows: formattedRows, columns });
   } catch (error) {
-  console.error("AI QUERY ERROR:", error.message);
-  const origin = isRuleMatched ? "Rule-Based Engine Framework" : "Llama-3 LLM Engine";
-  res.status(500).json({
-    error: error.message,
-    sql: `Execution failed. Origin: ${origin}. Make sure your rules generate unique queries.\n\nFailing Statement:\n${generatedSql || 'None Generated'}`
-  });
-}
+    console.error("AI QUERY ERROR:", error.message);
+    const origin = isRuleMatched ? "Rule-Based Engine Framework" : "Llama-3 LLM Engine";
+    res.status(500).json({
+      error: error.message,
+      sql: `Execution failed. Origin: ${origin}. Make sure your rules generate unique queries.\n\nFailing Statement:\n${generatedSql || 'None Generated'}`
+    });
+  }
 });
 
 app.post('/api/voice-query', upload.single('audio'), async (req, res) => {

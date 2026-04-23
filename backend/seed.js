@@ -138,7 +138,7 @@ async function seed() {
   await connection.query(`CREATE TABLE system_user (user_id INT AUTO_INCREMENT PRIMARY KEY, email VARCHAR(100) UNIQUE, password VARCHAR(100), permissions VARCHAR(20));`);
 
   await connection.query(`DROP TABLE IF EXISTS audit_log;`);
-  await connection.query(`CREATE TABLE audit_log (audit_id INT AUTO_INCREMENT PRIMARY KEY, action_type VARCHAR(50), log_details TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP);`);
+  await connection.query(`CREATE TABLE audit_log (audit_id INT AUTO_INCREMENT PRIMARY KEY, action_type VARCHAR(50), log_details TEXT, undo_sql TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP);`);
 
   // Triggers (Advanced Audit Logging)
   await connection.query(`DROP TRIGGER IF EXISTS AfterBookingCancel;`);
@@ -147,8 +147,30 @@ async function seed() {
     AFTER DELETE ON booking
     FOR EACH ROW
     BEGIN
-      INSERT INTO audit_log (action_type, log_details) 
-      VALUES ('BOOKING_CANCELLED', CONCAT('Booking ID: ', OLD.booking_id, ' for Passenger: ', OLD.passenger_id, ' was destroyed.'));
+      INSERT INTO audit_log (action_type, log_details, undo_sql) 
+      VALUES ('BOOKING_CANCELLED', CONCAT('Booking ID: ', OLD.booking_id, ' for Passenger: ', OLD.passenger_id, ' was destroyed.'), NULL);
+    END;
+  `);
+
+  await connection.query(`DROP TRIGGER IF EXISTS AfterPassengerInsert;`);
+  await connection.query(`
+    CREATE TRIGGER AfterPassengerInsert
+    AFTER INSERT ON passenger
+    FOR EACH ROW
+    BEGIN
+      INSERT INTO audit_log (action_type, log_details, undo_sql) 
+      VALUES ('SYSTEM_PASSENGER_INSERT', CONCAT('Inserted passenger ', NEW.first_name, ' ', NEW.last_name), CONCAT('DELETE FROM passenger WHERE passenger_id=', NEW.passenger_id));
+    END;
+  `);
+
+  await connection.query(`DROP TRIGGER IF EXISTS AfterAirlineInsert;`);
+  await connection.query(`
+    CREATE TRIGGER AfterAirlineInsert
+    AFTER INSERT ON airline
+    FOR EACH ROW
+    BEGIN
+      INSERT INTO audit_log (action_type, log_details, undo_sql) 
+      VALUES ('SYSTEM_AIRLINE_INSERT', CONCAT('Inserted airline ', NEW.name), CONCAT('DELETE FROM airline WHERE airline_id=', NEW.airline_id));
     END;
   `);
 
