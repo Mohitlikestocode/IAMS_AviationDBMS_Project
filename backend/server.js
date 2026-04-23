@@ -195,7 +195,8 @@ app.post('/api/ai-query', async (req, res) => {
       RULES:
       - Translate intent perfectly into SQL.
       - If the user asks for multi-insert or complex actions, write multiple statements separated by semicolon.
-      - Always assume generic data formatting if not fully specified.
+      - Always assume generic data formatting if not fully specified (e.g., auto-generate a passport_no if none is provided).
+      - NEVER manually insert into AUTO_INCREMENT primary key columns (like passenger_id). The database handles them.
       - RESPOND WITH ONLY THE RAW SQL STRING. Do not use block quotes or markdown.`;
   
       const result = await groq.chat.completions.create({
@@ -305,8 +306,9 @@ app.post('/api/voice-query', upload.single('audio'), async (req, res) => {
     
     RULES:
     - Translate intent perfectly into SQL.
-    - If the user asks for multi-insert or complex actions (e.g. adding a user AND a ticket), write multiple statements separated by semicolon, or just execute the primary action.
-    - Always assume generic data formatting if not fully specified.
+    - If the user asks for multi-insert or complex actions (e.g. adding a user AND a ticket), write multiple statements separated by semicolon.
+    - Always assume generic data formatting if not fully specified (e.g., auto-generate a passport_no if none is provided).
+    - NEVER manually insert into AUTO_INCREMENT primary key columns (like passenger_id). The database handles them.
     - RESPOND WITH ONLY THE RAW SQL STRING. Do not use block quotes or markdown.`;
 
     const result = await groq.chat.completions.create({
