@@ -120,7 +120,7 @@ app.post('/api/undo-transaction', async (req, res) => {
     // We rely mostly on deleting the audit log reference to signify the attempt, or executing manual override
 
     await pool.query('DELETE FROM audit_log WHERE audit_id = ?', [audit_id]);
-    await pool.query('INSERT INTO audit_log (action_type, log_details) VALUES (?, ?)', ['TRANSACTION_REVERT', \`Reverted transaction for audit ID \${audit_id}\`]);
+    await pool.query('INSERT INTO audit_log (action_type, log_details) VALUES (?, ?)', ['TRANSACTION_REVERT', `Reverted transaction for audit ID ${audit_id}`]);
 
     res.json({ success: true, message: 'Transaction flagged as reverted successfully' });
   } catch (error) { res.status(500).json({ error: error.message }); }
@@ -246,7 +246,7 @@ app.post('/api/ai-query', async (req, res) => {
       });
       
       generatedSql = result.choices[0].message.content.trim();
-      generatedSql = generatedSql.replace(/^[`]* /g, '').replace(/sql\n / i, '').replace(/[`]*$/g, '').trim();
+      generatedSql = generatedSql.replace(/^[`]*/g, '').replace(/sql\n/i, '').replace(/[`]*$/g, '').trim();
     }
 
 // Use a temp pool enabling multiple statements support just like voice routing
