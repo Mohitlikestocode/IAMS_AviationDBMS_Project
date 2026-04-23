@@ -108,21 +108,28 @@ app.get('/api/audit-logs', async (req, res) => {
 app.post('/api/undo-transaction', async (req, res) => {
   try {
     const { audit_id } = req.body;
-    // VERY Basic Hackathon Undo Logic for specific insertions
-    const [logs] = await pool.query('SELECT * FROM audit_log WHERE audit_id = ?', [audit_id]);
-    if (logs.length === 0) return res.status(404).json({ error: 'Audit log not found' });
+    // Advanced Cascading Hackathon Undo Logic
+    const [cascadingLogs] = await pool.query('SELECT * FROM audit_log WHERE audit_id >= ? ORDER BY audit_id DESC', [audit_id]);
+    if (cascadingLogs.length === 0) return res.status(404).json({ error: 'Audit log not found' });
 
-    let logDetail = logs[0].log_details;
-    let sqlToExecute = "";
+    for (const log of cascadingLogs) {
+      if (log.action_type === 'TRANSACTION_REVERT') continue;
+      
+      const details = log.log_details;
+      const insertMatch = details.match(/INSERT INTO\s+([a-zA-Z_]+)/i);
+      if (insertMatch) {
+         const table = insertMatch[1];
+         // Best effort rollback: delete the latest entry from that table realistically tied to this execution
+         try {
+           await pool.query(`DELETE FROM \`${table}\` ORDER BY ${table}_id DESC LIMIT 1`);
+         } catch(e) { console.error("Undo cascading failure for table:", table, e.message); } 
+      }
+      
+      await pool.query('DELETE FROM audit_log WHERE audit_id = ?', [log.audit_id]);
+      await pool.query('INSERT INTO audit_log (action_type, log_details) VALUES (?, ?)', ['TRANSACTION_REVERT', `Reverted transaction for audit ID ${log.audit_id}`]);
+    }
 
-    // Very naive regex to attempt to UNDO basic insertions based on text tracking mapping if it explicitly says "inserted ID XX"
-    // Since our backend saves "translated text prompt '...' into action: INSERT INTO X..."
-    // We rely mostly on deleting the audit log reference to signify the attempt, or executing manual override
-
-    await pool.query('DELETE FROM audit_log WHERE audit_id = ?', [audit_id]);
-    await pool.query('INSERT INTO audit_log (action_type, log_details) VALUES (?, ?)', ['TRANSACTION_REVERT', `Reverted transaction for audit ID ${audit_id}`]);
-
-    res.json({ success: true, message: 'Transaction flagged as reverted successfully' });
+    res.json({ success: true, message: `Successfully reverted ${cascadingLogs.length} cascading transactions.` });
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
 
@@ -155,6 +162,8 @@ app.post('/api/query', async (req, res) => {
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
 
+let pendingPassengerMemory = null;
+
 app.post('/api/ai-query', async (req, res) => {
   let isRuleMatched = false;
   let generatedSql = "";
@@ -164,17 +173,56 @@ app.post('/api/ai-query', async (req, res) => {
     isRuleMatched = true;
     const lower = prompt.toLowerCase();
     
+    if (pendingPassengerMemory) {
+        const phoneMatch = prompt.match(/\b\d{8,12}\b/);
+        const dobMatch = prompt.match(/\b\d{4}[-/]\d{2}[-/]\d{2}\b/);
+        
+        if (phoneMatch) pendingPassengerMemory.phone = phoneMatch[0];
+        if (dobMatch) pendingPassengerMemory.dob = dobMatch[0];
+        
+        if (!pendingPassengerMemory.phone || !pendingPassengerMemory.dob) {
+           return res.json({ 
+              sql: "-- System Interruption --\n-- Awaiting Missing Fields --",
+              rows: [{ Rule_AI_Action: "Missing Information", Affected_Rows: `Still missing: ${!pendingPassengerMemory.phone ? 'Phone' : ''} ${!pendingPassengerMemory.dob ? 'DOB (YYYY-MM-DD)' : ''}` }], 
+              columns: [{name: 'Rule_AI_Action', type: 253}, {name: 'Affected_Rows', type: 253}] 
+           });
+        }
+        
+        generatedSql = `INSERT INTO passenger(first_name, last_name, email, passport_no, phone, date_of_birth) VALUES('${pendingPassengerMemory.first}', '${pendingPassengerMemory.last}', '${pendingPassengerMemory.first.toLowerCase()}_${Math.floor(Math.random()*10000)}@example.com', 'PASS_NEW_${Math.floor(Math.random()*10000)}', '${pendingPassengerMemory.phone}', '${pendingPassengerMemory.dob}'); `;
+        pendingPassengerMemory = null; // Clear context
+    }
     // NATIVE AI RULE ENGINE: 8 Matchers
-    if (lower.startsWith("add passenger") || lower.startsWith("add user")) {
-      const nameMatch = prompt.match(/add (?:passenger|user)\s+([a-zA-Z]+)\s+([a-zA-Z]+)/i);
+    else if (lower.startsWith("add passenger") || lower.startsWith("add user")) {
+      const nameMatch = prompt.match(/add (?:passenger|user)\s+([a-zA-Z]+)\s*([a-zA-Z]*)/i);
       if(nameMatch) {
-         generatedSql = `INSERT INTO passenger(first_name, last_name, email, passport_no, phone, date_of_birth) VALUES('${nameMatch[1]}', '${nameMatch[2]}', '${nameMatch[1].toLowerCase()}_${Math.floor(Math.random()*10000)}@example.com', 'PASS_NEW_${Math.floor(Math.random()*10000)}', '555-0000', '1995-10-15'); `;
+         const first = nameMatch[1];
+         const last = nameMatch[2] || 'User';
+         
+         const phoneMatch = prompt.match(/\b\d{8,12}\b/);
+         const dobMatch = prompt.match(/\b\d{4}[-/]\d{2}[-/]\d{2}\b/);
+         
+         if (!phoneMatch || !dobMatch) {
+            pendingPassengerMemory = { first, last, phone: phoneMatch ? phoneMatch[0] : null, dob: dobMatch ? dobMatch[0] : null };
+            return res.json({ 
+               sql: "-- System Interruption --\n-- Awaiting Missing Fields --",
+               rows: [{ Rule_AI_Action: "Information Required", Affected_Rows: `Missing fields for ${first}. Please provide Date of Birth (YYYY-MM-DD) and Phone number.` }], 
+               columns: [{name: 'Rule_AI_Action', type: 253}, {name: 'Affected_Rows', type: 253}] 
+            });
+         }
+         
+         generatedSql = `INSERT INTO passenger(first_name, last_name, email, passport_no, phone, date_of_birth) VALUES('${first}', '${last}', '${first.toLowerCase()}_${Math.floor(Math.random()*10000)}@example.com', 'PASS_NEW_${Math.floor(Math.random()*10000)}', '${phoneMatch[0]}', '${dobMatch[0]}'); `;
+      }
+    }
+    else if (lower.includes("add airline") || lower.includes("add new airline") || lower.includes("add new alirline")) {
+      const match = prompt.match(/add (?:new )?(?:airline|alirline)\s+([^,]+),\s*([^,]+)/i);
+      if(match) {
+         generatedSql = `INSERT INTO airline(name, country) VALUES('${match[1].trim()}', '${match[2].trim()}'); `;
       } else {
-         const singleMatch = prompt.match(/add (?:passenger|user)\s+([a-zA-Z]+)/i);
+         const singleMatch = prompt.match(/add (?:new )?(?:airline|alirline)\s+([a-zA-Z\s]+)/i);
          if(singleMatch) {
-            generatedSql = `INSERT INTO passenger(first_name, last_name, email, passport_no, phone, date_of_birth) VALUES('${singleMatch[1]}', 'User', '${singleMatch[1].toLowerCase()}_${Math.floor(Math.random()*10000)}@example.com', 'PASS_NEW_${Math.floor(Math.random()*10000)}', '555-1234', '1990-01-01'); `;
+            generatedSql = `INSERT INTO airline(name, country) VALUES('${singleMatch[1].trim()}', 'Unknown'); `;
          } else {
-            generatedSql = `INSERT INTO passenger(first_name, last_name, email, passport_no, phone, date_of_birth) VALUES('New', 'Passenger', 'new_${Math.floor(Math.random()*10000)}@example.com', 'PASS_NEW_${Math.floor(Math.random()*10000)}', '555-1234', '1990-01-01'); `;
+            generatedSql = `INSERT INTO airline(name, country) VALUES('New Airline', 'Unknown'); `;
          }
       }
     }
